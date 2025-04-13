@@ -1,7 +1,7 @@
 #include "group_geom_sys.h"
 #include "std_space_factory.h"
 #include "naive_geometry_objects_factory.h"
-#include "parser/debug.hh"
+#include "../parser/debug.hh"
 #include "std_space_factory.h"
 using Eigen::SparseVector;
 static Log test_logger{true,"[nd_parser_realisation_1 group geom test]"};

@@ -1,6 +1,7 @@
 #ifndef LINEAR_ALGEBRA_UTILITES_H
 #define LINEAR_ALGEBRA_UTILITES_H
 #include "linear_algebra.h"
+#include <cassert>
 using namespace nd_geometry;
 namespace linear_algebra_utilites{
 template<typename Expr, typename Coef>

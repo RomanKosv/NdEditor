@@ -79,7 +79,7 @@ public:
         return o;
         */
         //теперь должно работать
-        return project_in_ortogonal(o,linear_algebra_utilites::ortanogalise_space(dims));
+        return project_in_ortogonal(o,linear_algebra_utilites::ortanogalise_space(algebra,dims));
     };
     virtual Group<Expr> inversion_of(Polyhedron<Expr> o){
         std::vector<Polyhedron<Expr>> halfspaces;
