@@ -26,6 +26,9 @@ struct StdSpaceFactory{
         res.coeffRef(index)=1;
         return res;
     }
+    SparseVector<Coef> get_scale(){
+        return get_one(scale);
+    }
     SparseVector<Coef> get_zero(){
         return SparseVector<Coef>(sparse_size);
     }

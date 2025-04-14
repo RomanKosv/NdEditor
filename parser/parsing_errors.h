@@ -1,9 +1,9 @@
 #ifndef PARSING_ERRORS_H
 #define PARSING_ERRORS_H
-#include "parser/parse_terminals.hh"
+#include "../parser/parse_terminals.hh"
 #include <variant>
 #include <memory>
-#include "parser/parse_instructions.hh"
+#include "../parser/parse_instructions.hh"
 using common_parsing::VariantError;
 using common_parsing::TerminalNoParseInfo;
 using common_parsing::NotParseNode;

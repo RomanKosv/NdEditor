@@ -20,6 +20,9 @@ struct Maybe{
 	bool isEmpty(){
 		return val.index()==0;
 	}
+    T get_ok(){
+        return get<T>(val);
+    }
 };
 }
 #endif /* WRAPPERS_HH_ */
