@@ -44,6 +44,12 @@ struct EvalRes{
 };
 struct ExprResSucces{
     std::variant<NumExpr,Figure> res;
+    NumExpr get_num(){
+        return get<NumExpr>(res);
+    }
+    Figure get_figure(){
+        return get<Figure>(res);
+    }
 };
 template<typename T>
 struct EvalMaybe{
@@ -64,10 +70,28 @@ struct EvalMaybe{
         return Maybe<EvalError>{};
     }
 };
-typedef function<EvalMaybe<NumExpr>(vector<ExprResSucces>,StdContext)> NumFun;
+struct NumFun{
+    function<EvalMaybe<NumExpr>(vector<EvalMaybe<ExprResSucces>>,StdContext)> fun;
+};
 struct BoolFun{
     function<EvalMaybe<Figure>(vector<EvalMaybe<ExprResSucces>>)> fun;
 };
+struct EvalFun{
+    variant<NumFun,BoolFun> fun;
+    bool is_num(){
+        return fun.index()==0;
+    }
+    bool is_logic(){
+        return fun.index()==1;
+    }
+    NumFun get_num(){
+        return get<NumFun>(fun);
+    }
+    BoolFun get_figure(){
+        return get<BoolFun>(fun);
+    }
+};
+
 enum class MultOp{
     mult,
     div
@@ -80,11 +104,14 @@ struct AndOp{};
 struct OrOp{};
 
 struct StdContext{
-    map<string,NumExpr> numvars;
-    map<string,Figure> figures;
+    map<string,ExprResSucces> vars;
+    map<string,EvalFun> funs;
+    //map<string,NumExpr> numvars;
+    //map<string,Figure> figures;
     map<size_t,string> dim_names;
-    map<string,NumFun> numfuns;
-    map<string,BoolFun> boolfuns;
+    //map<string,NumFun> numfuns;
+    //map<string,BoolFun> boolfuns;
+
     StdSpaceFactory<Scalar> space;
     LinearAlgebra<NumExpr,Scalar> algebra;
     GroupGeomSys<Scalar,NumExpr> gs;
@@ -92,6 +119,20 @@ struct StdContext{
         NumExpr perpendicular=linear_algebra_utilites::perpendicular_component(
             algebra,expr,space.get_one(space.scale));
         return linear_algebra_utilites::is_zero(algebra,perpendicular);
+    }
+    bool is_match_type(ExprResSucces val, EvalTypes type){
+        switch (type) {
+        case EvalTypes::figure:
+            return val.res.index()==1;
+            break;
+        case EvalTypes::numexpr:
+            return val.res.index()==0;
+        case EvalTypes::scalar:
+            return is_match_type(val,EvalTypes::numexpr)&&is_scalar(get<NumExpr>(val.res));
+        default:
+            assert(false);
+            break;
+        }
     }
     Maybe<Scalar> get_scalar(NumExpr expr){
         if(is_scalar(expr)){
@@ -199,10 +240,31 @@ struct StdContext{
         }
     };
     EvalMaybe<NumExpr> get_numvar(string name){
-        if(numvars.contains(name)){
-            return EvalMaybe<NumExpr>{numvars[name]};
+        if(vars.contains(name)&&is_match_type(vars[name],EvalTypes::numexpr)){
+            return EvalMaybe<NumExpr>{vars[name].get_num()};
         }else{
             return EvalMaybe<NumExpr>{EvalError{"cant find num var "+name}};
+        }
+    }
+    EvalMaybe<Figure> get_logic_var(string name){
+        if(vars.contains(name)&&is_match_type(vars[name],EvalTypes::numexpr)){
+            return EvalMaybe<Figure>{vars[name].get_figure()};
+        }else{
+            return EvalMaybe<Figure>{EvalError{"cant find logic var "+name}};
+        }
+    }
+    EvalMaybe<NumFun> get_num_fun(string name){
+        if(funs.contains(name)&&funs[name].is_num()){
+            return EvalMaybe<NumFun>{funs[name].get_num()};
+        }else{
+            return EvalMaybe<NumFun>{EvalError{"cant find num fun "+name}};
+        }
+    }
+    EvalMaybe<BoolFun> get_logic_fun(string name){
+        if(funs.contains(name)&&funs[name].is_logic()){
+            return EvalMaybe<BoolFun>{funs[name].get_figure()};
+        }else{
+            return EvalMaybe<BoolFun>{EvalError{"cant find logic fun "+name}};
         }
     }
     EvalMaybe<Figure> less(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right);

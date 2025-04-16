@@ -10,20 +10,20 @@ using common_parsing::NotParseNode;
 using common_parsing::Pos;
 using common_parsing::Text;
 using common_parsing::ParseNode;
-struct NoParseSintaxInfo{
+struct NoParseSintaxInfo{//система ужасная, надо переписать в будущем
     struct ParseVariationSintaxError:common_parsing::VariantError<NoParseSintaxInfo>{};
-    std::shared_ptr<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>> error;
-    NoParseSintaxInfo(TerminalNoParseInfo info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+    std::shared_ptr<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>> error;
+    NoParseSintaxInfo(NotParseNode<TerminalNoParseInfo> info){
+        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
     }
     NoParseSintaxInfo(ParseVariationSintaxError info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
     }
     NoParseSintaxInfo(common_parsing::VariantError<NoParseSintaxInfo> info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
     }
     NoParseSintaxInfo(string info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
     }
 };
 template<typename Res, typename Context>
@@ -35,7 +35,7 @@ template<typename Res, typename Context>
 struct ParseSyntaxError{
     std::variant<NotParseNode<NoParseSintaxInfo>,NotParseToEndError<Res,Context>> error;
     ParseSyntaxError(NotParseNode<TerminalNoParseInfo> node):
-        error{NotParseNode<NoParseSintaxInfo>{node.start,node.target,NoParseSintaxInfo{node.info}}}{}
+        error{NotParseNode<NoParseSintaxInfo>{node.start,node.target,NoParseSintaxInfo{node}}}{}
     ParseSyntaxError(NotParseNode<NoParseSintaxInfo::ParseVariationSintaxError> node):
         error{NotParseNode<NoParseSintaxInfo>{node.start,node.target,NoParseSintaxInfo{node.info}}}{}
     ParseSyntaxError(NotParseToEndError<Res,Context> info):error{info}{};
