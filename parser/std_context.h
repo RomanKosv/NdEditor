@@ -25,6 +25,7 @@ using common_parsing::Maybe;
 using nd_geometry::LinearAlgebra;
 using nd_parser_realisation_1::GroupGeomSys;
 namespace concrete_parsing_1{
+struct StdContext;
 typedef double Scalar;
 typedef SparseVector<Scalar> NumExpr;
 typedef Group<NumExpr> Figure;
@@ -63,9 +64,7 @@ struct EvalMaybe{
         return Maybe<EvalError>{};
     }
 };
-struct NumFun{
-    function<EvalMaybe<NumExpr>(vector<ExprResSucces>)> fun;
-};
+typedef function<EvalMaybe<NumExpr>(vector<ExprResSucces>,StdContext)> NumFun;
 struct BoolFun{
     function<EvalMaybe<Figure>(vector<EvalMaybe<ExprResSucces>>)> fun;
 };
@@ -199,6 +198,13 @@ struct StdContext{
             return EvalMaybe<Figure>{res};
         }
     };
+    EvalMaybe<NumExpr> get_numvar(string name){
+        if(numvars.contains(name)){
+            return EvalMaybe<NumExpr>{numvars[name]};
+        }else{
+            return EvalMaybe<NumExpr>{EvalError{"cant find num var "+name}};
+        }
+    }
     EvalMaybe<Figure> less(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right);
     EvalMaybe<Figure> less_or_eq(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right);
     EvalMaybe<Figure> more(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right);

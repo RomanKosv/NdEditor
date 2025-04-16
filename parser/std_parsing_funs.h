@@ -2,6 +2,9 @@
 #define STD_PARSING_FUNS_H
 #include "../parser/std_context.h"
 #include "../parser/parsing_errors.h"
+#include "../parser/operator_parse_instructions.hh"
+#include "../parser/function_parse_instructions.hh"
+#include <regex>
 using common_parsing::ParseResult;
 using common_parsing::Parse;
 using common_parsing::None;
@@ -38,12 +41,190 @@ ParseResult<EvalMaybe<ExprResSucces>,StdContext,NoParseSintaxInfo> p_common_var(
 //static Parse<None,None,TerminalNoParseInfo> p_not_op;
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_layer(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_add_layer(Text target, Pos start);
+ParseResult<SumOp,StdContext,NoParseSintaxInfo> p_add_op(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_mult_layer(Text target, Pos start);
+ParseResult<MultOp,StdContext,NoParseSintaxInfo> p_mult_op(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_brackets_layer(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_brackets(Text target, Pos start);
-ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_fun(Text target, Pos start);
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_fun(Text target, Pos start);//пока нет
+ParseResult<NumFun,StdContext,NoParseSintaxInfo> p_num_fun_name(Text target, Pos start);//пока нет
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_literal(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_var(Text target, Pos start);
 ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_unary_minus(Text target, Pos start);
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_layer(Text target, Pos start){
+    return p_add_layer(target,start);
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_add_layer(Text target, Pos start){
+    common_parsing::OperatorParseInstruction<EvalMaybe<NumExpr>,EvalMaybe<NumExpr>,SumOp,StdContext,NoParseSintaxInfo> instruction{
+        p_mult_layer,
+        p_add_op,
+        [](vector<EvalMaybe<NumExpr>> operands,vector<SumOp> operators,StdContext context){
+            return context.eval_sum_op(operands,operators);
+        }
+    };
+    return common_parsing::UseOperatorParseInstruction(target,start,instruction);
+};
+ParseResult<SumOp,StdContext,NoParseSintaxInfo> p_add_op(Text target, Pos start){
+    Maybe<Pos> res_add=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal("+"))})(target,start);
+    Maybe<Pos> res_rem=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal("-"))})(target,start);
+    if(!res_add.isEmpty()){
+        return ParseResult<SumOp,StdContext,NoParseSintaxInfo>{
+            ParseNode<SumOp,StdContext>{start,res_add.get_ok(),target,[](StdContext){return SumOp::add;}}
+        };
+    }else if(!res_rem.isEmpty()){
+        return ParseResult<SumOp,StdContext,NoParseSintaxInfo>{
+            ParseNode<SumOp,StdContext>{start,res_add.get_ok(),target,[](StdContext){return SumOp::rem;}}
+        };
+    }else{
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant parse +|-"}};
+    }
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_mult_layer(Text target, Pos start){
+    common_parsing::OperatorParseInstruction<EvalMaybe<NumExpr>,EvalMaybe<NumExpr>,MultOp,StdContext,NoParseSintaxInfo> instruction{
+        p_num_brackets_layer,
+        p_mult_op,
+        [](vector<EvalMaybe<NumExpr>> operands,vector<MultOp> operators,StdContext context){
+            return context.eval_mult_op(operands,operators);
+        }
+    };
+    return common_parsing::UseOperatorParseInstruction(target,start,instruction);
+};
+ParseResult<MultOp,StdContext,NoParseSintaxInfo> p_mult_op(Text target, Pos start){
+    Maybe<Pos> res_mult=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal("+"))})(target,start);
+    Maybe<Pos> res_div=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal("-"))})(target,start);
+    if(!res_mult.isEmpty()){
+        return ParseResult<MultOp,StdContext,NoParseSintaxInfo>{
+            ParseNode<MultOp,StdContext>{start,res_mult.get_ok(),target,[](StdContext){return MultOp::mult;}}
+        };
+    }else if(!res_div.isEmpty()){
+        return ParseResult<MultOp,StdContext,NoParseSintaxInfo>{
+            ParseNode<MultOp,StdContext>{start,res_div.get_ok(),target,[](StdContext){return MultOp::div;}}
+        };
+    }else{
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant parse *|/"}};
+    }
+};
+template<typename Res>
+ParseResult<Res,StdContext,NoParseSintaxInfo> translate(ParseResult<Res,StdContext,VariantError<NoParseSintaxInfo>> res){
+    if(common_parsing::isOk(res)){
+        return ParseResult<Res,StdContext,NoParseSintaxInfo>{get<ParseNode<Res,StdContext>>(res)};
+    }else{
+        NotParseNode<VariantError<NoParseSintaxInfo>> node=get<NotParseNode<VariantError<NoParseSintaxInfo>>>(res);
+        return ParseResult<Res,StdContext,NoParseSintaxInfo>{NotParseNode<NoParseSintaxInfo>{node.start,node.target,node.info}};
+    }
+}
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_brackets_layer(Text target, Pos start){
+    return translate(common_parsing::parse_variants<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo>(
+        {p_num_brackets/*,p_num_fun*/,p_num_literal,p_num_var,p_unary_minus})(target,start));
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_brackets(Text target, Pos start){
+    common_parsing::outparse parse_left=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal("("))});
+    common_parsing::outparse parse_right=common_parsing::skip_seq({common_parsing::wrap_skip(common_parsing::parse_terminal(")"))});
+    Maybe<Pos> left_res=parse_left(target,start);
+    if(!left_res.isEmpty()){
+        ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> res=p_num_layer(target,left_res.get_ok());
+        if(isOk(res)){
+            Maybe<Pos> right_res=parse_right(target,get<ParseNode<EvalMaybe<NumExpr>,StdContext>>(res).end);
+            if(!right_res.isEmpty()){
+                return ParseNode<EvalMaybe<NumExpr>,StdContext>{start,right_res.get_ok(),target,get<ParseNode<EvalMaybe<NumExpr>,StdContext>>(res).intreprete};
+            }else{
+                return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant read ')"}};
+            }
+        }else{
+            return NotParseNode<NoParseSintaxInfo>{start,target,get<NotParseNode<NoParseSintaxInfo>>(res).info};
+        }
+    }else{
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant read '("}};
+    }
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_fun(Text target, Pos start){
+    /*common_parsing::FunCallParseInstruction<EvalMaybe<NumExpr>,EvalMaybe<ExprResSucces>,StdContext,NoParseSintaxInfo> call{
+        p_num_fun_name,
+        p_eval_layer,
+    };*/
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_literal(Text target, Pos start){
+    common_parsing::outparse parse_num=common_parsing::wrap_skip(common_parsing::parse_variants<None,None,TerminalNoParseInfo>({
+        common_parsing::parse_terminal("0"),
+        common_parsing::parse_terminal("1"),
+        common_parsing::parse_terminal("2"),
+        common_parsing::parse_terminal("3"),
+        common_parsing::parse_terminal("4"),
+        common_parsing::parse_terminal("5"),
+        common_parsing::parse_terminal("6"),
+        common_parsing::parse_terminal("7"),
+        common_parsing::parse_terminal("8"),
+        common_parsing::parse_terminal("9")
+    }));
+    common_parsing::outparse parse_double=common_parsing::outparse_seq(
+        {
+         parse_num,
+         common_parsing::outparse_rep(parse_num),
+         common_parsing::maybe_outparse(common_parsing::outparse_seq(
+             {
+              common_parsing::wrap_skip(common_parsing::parse_terminal(".")),
+              parse_num,
+              common_parsing::outparse_rep(parse_num)}))
+        });
+    Maybe<Pos> pres=parse_double(target,start);
+    if(pres.isEmpty()){
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant read num"}};
+    }else{
+        return ParseNode<EvalMaybe<NumExpr>,StdContext>{
+            start,
+            pres.get_ok(),
+            target,
+            [start,target,pres](StdContext context)->EvalMaybe<NumExpr>{
+                return EvalMaybe<NumExpr>(context.space.get_scale()*stod(target->substr(start,pres.get_ok()-start)));}};
+    }
+};
+ParseResult<string,StdContext,NoParseSintaxInfo> p_name(Text target, Pos start){
+    std::regex r(R"(\w|\d)");
+    start=common_parsing::skip_spaces(target,start).get_ok();
+    if(!std::regex_match(target->substr(start,1),std::regex(R"(\w)"))){
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cannot read var name"}};
+    }
+    else{
+        Pos i=start;
+        while(std::regex_match(target->substr(start,1),r)){
+            i++;
+        }
+        string str=target->substr(start,i-start);
+        return ParseNode<string,StdContext>{start,i,target,[str](StdContext){return str;}};
+    }
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_num_var(Text target, Pos start){
+    ParseResult<string,StdContext,NoParseSintaxInfo> name=p_name(target,start);
+    if(common_parsing::isOk(name)){
+        ParseNode<string,StdContext> node=get<ParseNode<string,StdContext>>(name);
+        return ParseNode<EvalMaybe<NumExpr>,StdContext>{start,node.end,target,
+                                                         [node](StdContext context){return context.get_numvar(node.intreprete(context));}};
+    }else{
+        return NotParseNode<NoParseSintaxInfo>{start,target,NoParseSintaxInfo{"cant read var name"}};
+    }
+};
+ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> p_unary_minus(Text target, Pos start){
+    ParseResult<SumOp,StdContext,NoParseSintaxInfo> sum=p_add_op(target,start);
+    if(common_parsing::isOk(sum)){
+        ParseResult<EvalMaybe<NumExpr>,StdContext,NoParseSintaxInfo> num=p_num_layer(target,start);
+        if(common_parsing::isOk(num)){
+            ParseNode<SumOp,StdContext> sum_node=get<ParseNode<SumOp,StdContext>>(sum);
+            ParseNode<EvalMaybe<NumExpr>,StdContext> num_node=get<ParseNode<EvalMaybe<NumExpr>,StdContext>>(num);
+            return ParseNode<EvalMaybe<NumExpr>,StdContext>{
+                start,
+                num_node.end,
+                target,
+                [num_node,sum_node](StdContext c)->EvalMaybe<NumExpr>{
+                    return c.eval_sum_op(
+                        {EvalMaybe<NumExpr>{c.space.get_zero()},num_node.intreprete(c)},
+                        {sum_node.intreprete(c)});}};
+        }else{
+            return NotParseNode<NoParseSintaxInfo>{start,target,get<NotParseNode<NoParseSintaxInfo>>(num).info};
+        }
+    }else{
+        return NotParseNode<NoParseSintaxInfo>{start,target,get<NotParseNode<NoParseSintaxInfo>>(sum).info};
+    }
+};
+
 }
 #endif // STD_PARSING_FUNS_H

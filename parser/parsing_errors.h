@@ -12,12 +12,18 @@ using common_parsing::Text;
 using common_parsing::ParseNode;
 struct NoParseSintaxInfo{
     struct ParseVariationSintaxError:common_parsing::VariantError<NoParseSintaxInfo>{};
-    std::shared_ptr<std::variant<TerminalNoParseInfo,ParseVariationSintaxError>> error;
+    std::shared_ptr<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>> error;
     NoParseSintaxInfo(TerminalNoParseInfo info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError>>(info);
+        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
     }
     NoParseSintaxInfo(ParseVariationSintaxError info){
-        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError>>(info);
+        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+    }
+    NoParseSintaxInfo(common_parsing::VariantError<NoParseSintaxInfo> info){
+        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
+    }
+    NoParseSintaxInfo(string info){
+        error=make_shared<std::variant<TerminalNoParseInfo,ParseVariationSintaxError,string>>(info);
     }
 };
 template<typename Res, typename Context>

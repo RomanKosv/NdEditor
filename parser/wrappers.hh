@@ -20,7 +20,7 @@ struct Maybe{
 	bool isEmpty(){
 		return val.index()==0;
 	}
-    T get_ok(){
+    T get_ok()const{
         return get<T>(val);
     }
 };
