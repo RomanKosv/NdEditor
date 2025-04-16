@@ -38,8 +38,8 @@ public:
     }
 };
 
-template<typename L>
-decltype(auto) operator <<(TimePref<L> log, auto obj) {
+template<typename L, typename Obj>
+decltype(auto) operator <<(TimePref<L>& log, Obj obj) {
     return log.log<<log.pref<< get_time(':') << log.postf << obj;
 }
 
@@ -48,8 +48,8 @@ struct CycleLog {
     Log log;
 };
 
-template<typename Log>
-CycleLog<Log>& operator <<(CycleLog<Log> log, auto obj) {
+template<typename Log, typename Obj>
+CycleLog<Log>& operator <<(CycleLog<Log>& log, Obj obj) {
     log.log << obj;
     return log;
 }
@@ -78,8 +78,8 @@ public:
         file.close();
     }
 };
-
-FileLog& operator <<(FileLog& log, auto obj) {
+template<typename Obj>
+FileLog& operator <<(FileLog& log, Obj obj) {
     ofstream &f = log.file;
     f<<obj;
     return log;
@@ -91,8 +91,8 @@ struct AddPrefix {
     string prefix;
 };
 
-template<typename Log>
-decltype(auto) operator <<(AddPrefix<Log> log, auto obj) {
+template<typename Log, typename Obj>
+decltype(auto) operator <<(AddPrefix<Log>& log, Obj obj) {
     return log.log<<log.prefix << obj;
 }
 
@@ -127,6 +127,48 @@ decltype(auto) operator <<(Log log, Obj obj) {
 template<typename Log>
 AddPrefix<Log> startOnLine(Log log) {
     return {log, "\n"};
+}
+
+template<typename Log>
+struct AddOverview{
+    Log log;
+    string prefix = "\n##################################\nOverview:\n";
+    string postfix = "\n##################################\n";
+    ~AddOverview() {
+        cout << "\nInput overview (one line):" <<endl;
+        string overview;
+        // cin.clear();
+        // cin.sync();
+        cin.ignore();
+        getline(cin, overview);
+        log << prefix << overview << postfix;
+    }
+};
+
+template<typename Log, typename Obj>
+decltype(auto) operator <<(AddOverview<Log>& log, Obj obj){
+    return log.log<<obj;
+}
+
+template<typename Log, typename Input = decltype(cin)&>
+struct InputLogger{
+    Log log;
+    Input input;
+    static InputLogger<Log> stdInput(Log logger) {
+        return {logger, cin};
+    }
+};
+
+template<typename Log, typename Inp, typename Obj>
+decltype(auto) operator>>(InputLogger<Log, Inp> input, Obj &obj) {
+    decltype(auto) new_inp = input.input>>obj;
+    return InputLogger<decltype(input.log<<obj), decltype(input.input>>obj)>{input.log<<obj, new_inp};
+}
+
+template<typename Log, typename Inp, typename Str>
+decltype(auto) getline(InputLogger<Log, Inp>& input, Str& str) {
+    decltype(auto) new_inp = getline(input.input, str);
+    return InputLogger<decltype(input.log<<str), decltype(getline(input.input, str))>{input.log<<str, new_inp};
 }
 
 #endif // LOGGER_H
