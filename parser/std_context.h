@@ -74,20 +74,20 @@ struct NumFun{
     function<EvalMaybe<NumExpr>(vector<EvalMaybe<ExprResSucces>>,StdContext)> fun;
 };
 struct BoolFun{
-    function<EvalMaybe<Figure>(vector<EvalMaybe<ExprResSucces>>)> fun;
+    function<EvalMaybe<Figure>(vector<EvalMaybe<ExprResSucces>>,StdContext)> fun;
 };
 struct EvalFun{
     variant<NumFun,BoolFun> fun;
-    bool is_num(){
+    bool is_num() const{
         return fun.index()==0;
     }
-    bool is_logic(){
+    bool is_logic() const{
         return fun.index()==1;
     }
-    NumFun get_num(){
+    NumFun get_num() const{
         return get<NumFun>(fun);
     }
-    BoolFun get_figure(){
+    BoolFun get_figure() const{
         return get<BoolFun>(fun);
     }
 };
@@ -100,8 +100,16 @@ enum class SumOp{
     add,
     rem
 };
-struct AndOp{};
-struct OrOp{};
+typedef common_parsing::None AndOp;
+typedef common_parsing::None OrOp;
+enum class CompOp{
+    less,
+    less_or_eq,
+    more,
+    more_or_eq,
+    eq,
+    no_eq
+};
 
 struct StdContext{
     map<string,ExprResSucces> vars;
@@ -239,6 +247,13 @@ struct StdContext{
             return EvalMaybe<Figure>{res};
         }
     };
+    EvalMaybe<ExprResSucces> get_common_var(string name){
+        if(vars.contains(name)&&is_match_type(vars[name],EvalTypes::numexpr)){
+            return EvalMaybe<ExprResSucces>{vars[name]};
+        }else{
+            return EvalMaybe<ExprResSucces>{EvalError{"cant find num var "+name}};
+        }
+    }
     EvalMaybe<NumExpr> get_numvar(string name){
         if(vars.contains(name)&&is_match_type(vars[name],EvalTypes::numexpr)){
             return EvalMaybe<NumExpr>{vars[name].get_num()};
@@ -265,6 +280,76 @@ struct StdContext{
             return EvalMaybe<BoolFun>{funs[name].get_figure()};
         }else{
             return EvalMaybe<BoolFun>{EvalError{"cant find logic fun "+name}};
+        }
+    }
+    EvalMaybe<EvalFun> get_common_fun(string name){
+        if(funs.contains(name)&&funs[name].is_logic()){
+            return EvalMaybe<EvalFun>{funs[name]};
+        }else{
+            return EvalMaybe<EvalFun>{EvalError{"cant find fun "+name}};
+        }
+    }
+    common_parsing::Fun<EvalMaybe<ExprResSucces>,EvalMaybe<ExprResSucces>,StdContext> wrap_common_fun(EvalFun fun){
+        return [fun](vector<EvalMaybe<ExprResSucces>> vec,StdContext c){
+            if(fun.is_logic()){
+                EvalMaybe<Figure> f=fun.get_figure().fun(vec,c);
+                if(f.isOk()){
+                    return EvalMaybe<ExprResSucces>{ExprResSucces{f.getOk()}};
+                }else{
+                    return EvalMaybe<ExprResSucces>{f.getErr()};
+                }
+            }else{
+                EvalMaybe<NumExpr> n=fun.get_num().fun(vec,c);
+                if(n.isOk()){
+                    return EvalMaybe<ExprResSucces>{ExprResSucces{n.getOk()}};
+                }else{
+                    return EvalMaybe<ExprResSucces>{n.getErr()};
+                }
+            }
+        };
+    }
+    EvalMaybe<Figure> inverse(EvalMaybe<Figure> figure){
+        if(figure.isOk()){
+            return EvalMaybe<Figure>{gs.inversion_of(figure.getOk())};
+        }else{
+            return figure;
+        }
+    }
+    EvalMaybe<Figure> comp(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right,CompOp op){
+        Maybe<EvalError> err=EvalMaybe<NumExpr>::get_first_no_ok({left,right});
+        if(!err.isEmpty()){
+            return EvalMaybe<Figure>{err.get_ok()};
+        }else{
+            NumExpr l=left.getOk();
+            NumExpr r=right.getOk();
+            switch (op) {
+            case CompOp::less:
+                return EvalMaybe<Figure>{
+                                         gs.obj_factory.make_group({
+                                               gs.obj_factory.make_polyhedron({
+                                                                               gs.obj_factory.make_halfspace(l-r,true)})})};
+                break;
+            case CompOp::less_or_eq:
+                return EvalMaybe<Figure>{
+                                         gs.obj_factory.make_group({
+                                                                    gs.obj_factory.make_polyhedron({
+                                                                                                    gs.obj_factory.make_halfspace(l-r,false)})})};
+                break;
+            case CompOp::more:
+                return inverse(comp(left,right,CompOp::less_or_eq));
+                break;
+            case CompOp::more_or_eq:
+                return inverse(comp(left,right,CompOp::less));
+                break;
+            case CompOp::eq:
+                return eval_and_op({comp(left,right,CompOp::less_or_eq),comp(left,right,CompOp::more_or_eq)},{AndOp{}});
+                break;
+            case CompOp::no_eq:
+                return inverse(comp(left,right,CompOp::eq));
+                break;
+            default:
+                break;
+            }
         }
     }
     EvalMaybe<Figure> less(EvalMaybe<NumExpr> left, EvalMaybe<NumExpr> right);

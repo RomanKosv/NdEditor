@@ -57,7 +57,20 @@ ParseNode<vector<Res>,Context> compress_parse_vector(vector<ParseNode<Res,Contex
     res.intreprete=intreprete;
     return res;
 }
-
+template<typename Res, typename Context, typename NoParseInfo>
+tuple<vector<ParseNode<Res,Context>>,Maybe<NotParseNode<NoParseInfo>>> parse_sequense(vector<Parse<Res,Context,NoParseInfo>> seq, Text target, Pos start){
+    vector<ParseNode<Res,Context>> res;
+    Pos current=start;
+    for(Parse<Res,Context,NoParseInfo> p:seq){
+        ParseResult<Res,Context,NoParseInfo> step=p(target,start);
+        if(isOk(step)){
+            res.push_back(get<ParseNode<Res,Context>>(res));
+        }else{
+            return {res,Maybe<NotParseNode<NoParseInfo>>{get<NotParseNode<NoParseInfo>>(res)}};
+        }
+    }
+    return {res,Maybe<NotParseNode<NoParseInfo>>{}};
+}
 }
 
 #endif /* PARSE_INSTRUCTIONS_HH_ */

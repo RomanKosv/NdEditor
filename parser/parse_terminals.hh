@@ -43,5 +43,16 @@ outparse skip_seq(vector<outparse> seq,outparse skip=skip_spaces){
     }
     return outparse_seq(sp_seq);
 }
+Parse<None,None,TerminalNoParseInfo> wrap_skip_parse_tarminal(string s){
+    return [s](Text target, Pos start)->ParseResult<None,None,TerminalNoParseInfo>{
+        outparse parse=skip_seq({wrap_skip(parse_terminal(s))});
+        Maybe<Pos> res=parse(target,start);
+        if(res.isEmpty()){
+            return NotParseNode<TerminalNoParseInfo>{start,target,make_shared<string>(s)};
+        }else{
+            return ParseNode<None,None>{start,res.get_ok(),target,[](None){return None{};}};
+        }
+    };
+}
 }
 #endif /* PARSE_TERMINALS_HH_ */
