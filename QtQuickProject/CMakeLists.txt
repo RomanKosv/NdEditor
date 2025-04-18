@@ -16,6 +16,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appQtQuickProject
+    main.cpp
 )
 
 qt_add_qml_module(appQtQuickProject
@@ -28,6 +29,7 @@ qt_add_qml_module(appQtQuickProject
         SOURCES triangle_geometry.h
         SOURCES triangles.h
         SOURCES triangle_geometry.cpp
+        SOURCES
 # >>>>>>> origin/logger
 )
 

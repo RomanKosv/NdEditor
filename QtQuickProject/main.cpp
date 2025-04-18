@@ -1,4 +1,3 @@
-#include <QObject>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
