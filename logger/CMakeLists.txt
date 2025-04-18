@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(logger main.cpp
-    logger.h)
+    logger.h
+    basic_loggers.h)
 
 include(GNUInstallDirs)
 install(TARGETS logger

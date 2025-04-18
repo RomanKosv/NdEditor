@@ -43,20 +43,31 @@ decltype(auto) operator <<(TimePref<L>& log, Obj obj) {
     return log.log<<log.pref<< get_time(':') << log.postf << obj;
 }
 
-template<typename Log>
-struct CycleLog {
+// template<typename Log>
+// struct CycleLog {
+//     Log log;
+// };
+
+// template<typename Log, typename Obj>
+// CycleLog<Log>& operator <<(CycleLog<Log>& log, Obj obj) {
+//     log.log << obj;
+//     return log;
+// }
+
+template<typename Log, typename Fun>
+struct MapLog{
     Log log;
+    Fun fun;
 };
 
-template<typename Log, typename Obj>
-CycleLog<Log>& operator <<(CycleLog<Log>& log, Obj obj) {
-    log.log << obj;
-    return log;
+template<typename Log, typename Fun, typename Obj>
+decltype(auto) operator <<(MapLog<Log, Fun>& log, Obj obj) {
+    return MapLog<decltype(log.fun(log.log, obj)), Fun&>{log.fun(log.log, obj), log.fun};
 }
 
 class FileLog{
 public:
-    ofstream file;
+    ofstream file{};
     FileLog(filesystem::path dir, filesystem::path name) {
         if (!filesystem::exists(dir)) filesystem::create_directories(dir);
         //cout << dir/name <<endl;
@@ -65,18 +76,25 @@ public:
     }
     FileLog(filesystem::path path) : FileLog(path.parent_path(), path.filename()) {
     }
+    FileLog() {
+    }
+
+    FileLog(FileLog&& old) {
+        file = std::move(old.file);
+    }
+
+    FileLog& operator=(FileLog&& old) {
+        file = std::move(old.file);
+        return *this;
+    }
 
     static filesystem::path simple_time_path(){
-        return filesystem::path("log")/(get_date_and_time()+".txt");
+        return get_date_and_time()+".txt";
     }
-
-    static filesystem::path simple_time_path(string theme) {
-        return filesystem::path("log")/theme/(get_date_and_time()+".txt");
-    }
-
     ~FileLog() {
         file.close();
     }
+
 };
 template<typename Obj>
 FileLog& operator <<(FileLog& log, Obj obj) {
@@ -135,11 +153,9 @@ struct AddOverview{
     string prefix = "\n##################################\nOverview:\n";
     string postfix = "\n##################################\n";
     ~AddOverview() {
+        cin.ignore(10000, '\n');
         cout << "\nInput overview (one line):" <<endl;
         string overview;
-        // cin.clear();
-        // cin.sync();
-        cin.ignore();
         getline(cin, overview);
         log << prefix << overview << postfix;
     }
