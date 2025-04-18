@@ -191,7 +191,8 @@ struct AddOverview{
     string prefix = "\n##################################\nOverview:\n";
     string postfix = "\n##################################\n";
     ~AddOverview() {
-        cin.ignore(10000, '\n');
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         cout << "\nInput overview (one line):" <<endl;
         string overview;
         getline(cin, overview);

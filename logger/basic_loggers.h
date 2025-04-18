@@ -3,25 +3,6 @@
 
 #include "logger.h"
 
-static AddOverview<FileLog> SAVE_LOG{{filesystem::path("log")/FileLog::simple_time_path()}};
-
-static FileLog& FILE_LOG = SAVE_LOG.log;
-
-static decltype(cout)& CONSOLE_LOG = cout;
-
-static TimePref<AddPrefix<decltype(FILE_LOG)&>> BASE_FILE_LOG{
-    startOnLine<decltype(FILE_LOG)&>(
-        FILE_LOG
-        )
-};
-
-static decltype(CONSOLE_LOG)& BASE_CONSOLE_LOG = CONSOLE_LOG;
-
-static TwoLogs<decltype(BASE_FILE_LOG)&, decltype(BASE_CONSOLE_LOG)&> LOG{
-    BASE_FILE_LOG,
-    BASE_CONSOLE_LOG
-};
-
 struct with_input_prefix{
     template<typename Log, typename Obj>
     decltype(auto) operator()(Log& log, Obj obj){
@@ -29,16 +10,17 @@ struct with_input_prefix{
     }
 };
 
-static decltype(auto) INPUT = InputLogger<MapLog<decltype(BASE_FILE_LOG)&, with_input_prefix>>{
-    MapLog<decltype(BASE_FILE_LOG)&, with_input_prefix>{
-        BASE_FILE_LOG,
-        with_input_prefix{}
-    },
-    cin
+struct BaseLogSystem {
+    AddOverview<FileLog> save_log;
+    TwoLogs<TimePref<AddPrefix<FileLog&>>, decltype(cout)&> log;
+    InputLogger<MapLog<decltype(log.log1)&, with_input_prefix>> input;
+    BaseLogSystem(filesystem::path dir)
+        : save_log{{dir, FileLog::simple_time_path()}},
+        log{{{save_log.log, "\n"}}, {cout}},
+        input{{log.log1, {}}, cin}
+    {
+    }
 };
 
-static void log_file_in_dir(filesystem::path path) {
-    SAVE_LOG.log = {path/FileLog::simple_time_path()};
-}
 
 #endif // BASIC_LOGGERS_H

@@ -13,16 +13,20 @@ using namespace std;
 //     cout << "Hello World!" << endl;
 // =======
 
+static BaseLogSystem log_sys{R"(C:\Users\Public\NdEditor\logs)"};
+static decltype(log_sys.log)& LOG = log_sys.log;
+static decltype(log_sys.input)& IN = log_sys.input;
+
 int main()
 {
-    LOG<<11<<12<<"aaaa";
+    LOG<<11<<12<<"aaaa"<< '\n';
     AddPrefix<decltype(LOG)&> local_log{LOG, "[local]"};
-    local_log<<12<<123<<"qwwe";
+    local_log<<12<<123<<"qwwe"<< '\n';
     int a,b;
     string s;
-    INPUT>>a>>b>>a;
+    IN>>a>>b>>a;
     // getline(INP, s);
-    INPUT>>a;
+    IN>>a;
 // >>>>>>> origin/logger
     return 0;
 }
