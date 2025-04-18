@@ -4,7 +4,14 @@ project(QtQuickProject VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Quick3D Gui)
+# <<<<<<< HEAD
+# find_package(Qt6 REQUIRED COMPONENTS Quick Quick3D Gui)
+# =======
+find_package(Qt6 REQUIRED COMPONENTS
+    Quick
+    Quick3D
+)
+# >>>>>>> origin/logger
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -15,6 +22,13 @@ qt_add_qml_module(appQtQuickProject
     URI QtQuickProject
     VERSION 1.0
     QML_FILES
+# <<<<<<< HEAD
+# =======
+        Main.qml
+        SOURCES triangle_geometry.h
+        SOURCES triangles.h
+        SOURCES triangle_geometry.cpp
+# >>>>>>> origin/logger
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -29,9 +43,15 @@ set_target_properties(appQtQuickProject PROPERTIES
 )
 
 target_link_libraries(appQtQuickProject
-    PRIVATE Qt6::Quick
-    Qt6::Quick3D
-    Qt6::Gui
+# <<<<<<< HEAD
+#     PRIVATE Qt6::Quick
+#     Qt6::Quick3D
+#     Qt6::Gui
+# =======
+    PRIVATE
+        Qt6::Quick
+        Qt6::Quick3D
+# >>>>>>> origin/logger
 )
 
 include(GNUInstallDirs)
