@@ -218,27 +218,56 @@ template<bool checkSquare = false>
 std::vector<Triangle> triangulate(std::vector<std::vector<std::optional<Segment3d>>> segments) {
     std::vector<Triangle> triangles{};
     for(size_t i = 0; i < segments.size()+1; i++) {
-        std::vector<Vec3d> points{};
+        std::vector<std::tuple<Vec3d, Vec3d>> points{};
         if (i>0) {
             for(auto opt_seg : segments[i-1]) {
                 if (opt_seg.has_value()) {
                     Segment3d seg = opt_seg.value();
-                    if(seg.getA().has_value()) points.push_back(seg.getA().value());
-                    if(seg.getB().has_value()) points.push_back(seg.getB().value());
+                    assert(seg.getA().has_value()&&seg.getB().has_value());
+                    points.push_back({seg.getA().value(), seg.getB().value()});
                 }
             }
         }
         for(size_t j = i; j<segments.size(); j++) {
             if (segments[j][i].has_value()) {
                 Segment3d seg = segments[j][i].value();
-                if(seg.getA().has_value()) points.push_back(seg.getA().value());
-                if(seg.getB().has_value()) points.push_back(seg.getB().value());
+                assert(seg.getA().has_value()&&seg.getB().has_value());
+                points.push_back({seg.getA().value(), seg.getB().value()});
             }
         }
-        for(size_t p = 1; p < points.size()-1; p++) {
-            if(!checkSquare || !(points[0] == points[p] || points[0] == points[p+1] || points[p] == points[p+1]))
-                triangles.push_back({points[0], points[p], points[p+1]});
+        for(int p = 1;p<points.size(); p++){
+            if (!checkSquare || !(std::get<0>(points[0]) == std::get<0>(points[p]) || std::get<0>(points[0]) == std::get<1>(points[p]) || std::get<0>(points[p]) == std::get<1>(points[p]))) {
+                LOG << "[Triangle by plane"<<i << "]"
+                    <<str(std::get<0>(points[0]))
+                    <<str(std::get<0>(points[p]))
+                    <<str(std::get<1>(points[p])) <<'\n';
+                triangles.push_back({
+                                     std::get<0>(points[0]),
+                                     std::get<0>(points[p]),
+                                     std::get<1>(points[p])});
+            }
         }
+        // std::vector<Vec3d> points{};
+        // if (i>0) {
+        //     for(auto opt_seg : segments[i-1]) {
+        //         if (opt_seg.has_value()) {
+        //             Segment3d seg = opt_seg.value();
+        //             if(seg.getA().has_value()) points.push_back(seg.getA().value());
+        //             if(seg.getB().has_value()) points.push_back(seg.getB().value());
+        //         }
+        //     }
+        // }
+        // for(size_t j = i; j<segments.size(); j++) {
+        //     if (segments[j][i].has_value()) {
+        //         Segment3d seg = segments[j][i].value();
+        //         if(seg.getA().has_value()) points.push_back(seg.getA().value());
+        //         if(seg.getB().has_value()) points.push_back(seg.getB().value());
+        //     }
+        // }
+        // for(size_t p = 1; p < points.size()-1; p++) {
+        //     if(!checkSquare || !(points[0] == points[p] || points[0] == points[p+1] || points[p] == points[p+1]))
+        //         triangles.push_back({points[0], points[p], points[p+1]});
+        // }
     }
     return triangles;
 }

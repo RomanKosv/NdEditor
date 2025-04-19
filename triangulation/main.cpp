@@ -3,7 +3,7 @@
 #include <vector>
 
 int main(int argc, char *argv[]) {
-    std::vector<Halfspace3d> cube{{{1, 0, 0}, 1}, {{-1, 0, 0}, 0}, {{0, 1, 0}, 1}, {{0, -1, 0}, 0}, {{0 ,0 ,1}, 1}, {{0, 0, -1}, 0}};
+    std::vector<Halfspace3d> cube{{{1, 0, 0}, 1}, {{-1, 0, 0}, 1}, {{0, 1, 0}, 1}, {{0, -1, 0}, 1}, {{0 ,0 ,1}, 1}, {{0, 0, -1}, 1}};
     auto segs = toPoints(cube);
     for(auto v : segs) {
         for(auto s : v){
