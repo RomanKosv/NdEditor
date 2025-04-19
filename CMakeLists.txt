@@ -22,3 +22,4 @@ install(TARGETS NdEditor
 add_subdirectory(testWindow)
 add_subdirectory(QtQuickProject)
 add_subdirectory(logger)
+add_subdirectory(triangulation)
