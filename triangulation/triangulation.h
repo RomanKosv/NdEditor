@@ -1,7 +1,6 @@
 #ifndef TRIANGULATION_H
 #define TRIANGULATION_H
-#include <cfloat>
-#include <iostream>
+#include <limits>
 #include <optional>
 #include <string>
 #include <variant>
@@ -9,51 +8,53 @@
 #include <cmath>
 #include <vector>
 #include "../logger/basic_loggers.h"
+#include "../QtQuickProject/triangles.h"
+
+namespace Triangulation{
 
 static BaseLogSystem log_sys{R"(..\..\..\logs\triangulation\)"};
 #define LOG log_sys.log
 #define INP log_sys.input
 
 using std::get;
-using std::cout;
 
-typedef double Scalar;
-typedef std::tuple<Scalar, Scalar, Scalar> Vec3d;
+typedef float Scalar;
+typedef GraphicsTriangles::vec3 Vec3d;
 
 typedef struct {
     Vec3d axis;
     Scalar less_than;
 } Halfspace3d;
 
-typedef std::tuple<Vec3d, Vec3d, Vec3d> Triangle;
+typedef GraphicsTriangles::triangle Triangle;
 
+Scalar x(Vec3d v) {
+    return v.a;
+}
+Scalar y(Vec3d v) {
+    return v.b;
+}
+Scalar z(Vec3d v) {
+    return v.c;
+}
 std::string str(Vec3d v) {
     std::string s = "(";
-    s += std::to_string(get<0>(v));
+    s += std::to_string(x(v));
     s += ",";
-    s += std::to_string(get<1>(v));
+    s += std::to_string(y(v));
     s += ",";
-    s += std::to_string(get<2>(v));
+    s += std::to_string(z(v));
     s += ")";
     return s;
 }
 
 std::string str(Triangle tr) {
-    return "{" + str(get<0>(tr)) + ";" + str(get<1>(tr)) + ";" + str(get<2>(tr)) + "}";
+    return "{" + str(tr.a) + ";" + str(tr.b) + ";" + str(tr.c) + "}";
 }
 
-const Scalar P_INF = DBL_MAX;
-const Scalar N_INF = -DBL_MAX;
+const Scalar P_INF = std::numeric_limits<Scalar>::max();
+const Scalar N_INF = -std::numeric_limits<Scalar>::max();
 
-Scalar x(Vec3d v) {
-    return get<0>(v);
-}
-Scalar y(Vec3d v) {
-    return get<1>(v);
-}
-Scalar z(Vec3d v) {
-    return get<2>(v);
-}
 Scalar scalar_mult(Vec3d v1, Vec3d v2) {
     return x(v1)*x(v2) + y(v1)*y(v2) + z(v1)*z(v2);
 }
@@ -214,7 +215,7 @@ std::vector<std::vector<std::optional<Segment3d>>> toPoints(std::vector<Halfspac
     return segments;
 }
 
-template<bool checkSquare = false>
+// template<bool checkSquare = false>
 std::vector<Triangle> triangulate(std::vector<std::vector<std::optional<Segment3d>>> segments) {
     std::vector<Triangle> triangles{};
     for(size_t i = 0; i < segments.size()+1; i++) {
@@ -236,7 +237,7 @@ std::vector<Triangle> triangulate(std::vector<std::vector<std::optional<Segment3
             }
         }
         for(int p = 1;p<points.size(); p++){
-            if (!checkSquare || !(std::get<0>(points[0]) == std::get<0>(points[p]) || std::get<0>(points[0]) == std::get<1>(points[p]) || std::get<0>(points[p]) == std::get<1>(points[p]))) {
+            if (/*!checkSquare || !(std::get<0>(points[0]) == std::get<0>(points[p]) || std::get<0>(points[0]) == std::get<1>(points[p]) || std::get<0>(points[p]) == std::get<1>(points[p]))*/ true) {
                 LOG << "[Triangle by plane"<<i << "]"
                     <<str(std::get<0>(points[0]))
                     <<str(std::get<0>(points[p]))
@@ -271,5 +272,5 @@ std::vector<Triangle> triangulate(std::vector<std::vector<std::optional<Segment3
     }
     return triangles;
 }
-
+}
 #endif // TRIANGULATION_H

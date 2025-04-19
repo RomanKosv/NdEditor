@@ -1,6 +1,7 @@
 #include "triangulation.h"
-#include <iostream>
 #include <vector>
+
+using namespace Triangulation;
 
 int main(int argc, char *argv[]) {
     std::vector<Halfspace3d> cube{{{1, 0, 0}, 1}, {{-1, 0, 0}, 1}, {{0, 1, 0}, 1}, {{0, -1, 0}, 1}, {{0 ,0 ,1}, 1}, {{0, 0, -1}, 1}};
@@ -11,7 +12,7 @@ int main(int argc, char *argv[]) {
         }
         LOG<<"||||\n";
     }
-    auto tr = triangulate<true>(segs);
+    auto tr = triangulate/*<true>*/(segs);
     for(Triangle i : tr) {
         LOG << str(i) <<'\n';
     }
