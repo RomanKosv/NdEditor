@@ -192,6 +192,7 @@ struct AddOverview{
     string postfix = "\n##################################\n";
     ~AddOverview() {
         cin.clear();
+        cout << 1 << (int) cin.tellg();
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         cout << "\nInput overview (one line):" <<endl;
         string overview;

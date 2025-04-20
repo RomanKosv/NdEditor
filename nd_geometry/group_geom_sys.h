@@ -14,12 +14,18 @@ public:
     std::shared_ptr<PolyhedronGeomSys<Expr,Coef>> polyhedron_gs;
     virtual Group<Expr> intersect_of(Group<Expr> o1, Group<Expr> o2)override{
         std::vector<Polyhedron<Expr>> intersections;
-        for(Polyhedron<Expr> i:*o1.get_components()){
-            for(Polyhedron<Expr> j:*o2.get_components()){
-                intersections.push_back(polyhedron_gs->intersect_of(i,j));
+        if(o1.get_components()->size()==0){
+            return o2;
+        }else if(o2.get_components()->size()==0){
+            return o1;
+        }else{
+            for(Polyhedron<Expr> i:*o1.get_components()){
+                for(Polyhedron<Expr> j:*o2.get_components()){
+                    intersections.push_back(polyhedron_gs->intersect_of(i,j));
+                }
             }
+            return obj_factory.make_group(intersections);
         }
-        return obj_factory.make_group(intersections);
     };
     virtual Group<Expr> union_of(Group<Expr> o1, Group<Expr> o2)override{
         return obj_factory.make_group(concatenate((*o1.get_components()),(*o2.get_components())));

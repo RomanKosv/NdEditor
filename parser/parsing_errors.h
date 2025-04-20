@@ -1,9 +1,9 @@
 #ifndef PARSING_ERRORS_H
 #define PARSING_ERRORS_H
+#include "../parser/parse_instructions.hh"
 #include "../parser/parse_terminals.hh"
 #include <variant>
 #include <memory>
-#include "../parser/parse_instructions.hh"
 using common_parsing::VariantError;
 using common_parsing::TerminalNoParseInfo;
 using common_parsing::NotParseNode;
@@ -20,10 +20,14 @@ struct NoParseSintaxInfo{//система ужасная, надо перепи�
         error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
     }
     NoParseSintaxInfo(common_parsing::VariantError<NoParseSintaxInfo> info){
-        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
+        error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(
+            ParseVariationSintaxError{info});
     }
     NoParseSintaxInfo(string info){
         error=make_shared<std::variant<NotParseNode<TerminalNoParseInfo>,ParseVariationSintaxError,string,NotParseNode<NoParseSintaxInfo>>>(info);
+    }
+    NoParseSintaxInfo(TerminalNoParseInfo info):NoParseSintaxInfo("cant read "+*info.terminal){
+
     }
 };
 template<typename Res, typename Context>

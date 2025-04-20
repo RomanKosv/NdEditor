@@ -84,7 +84,7 @@ public:
     virtual Group<Expr> inversion_of(Polyhedron<Expr> o){
         std::vector<Polyhedron<Expr>> halfspaces;
         for(HalfSpace<Expr> hs:*o.get_faces()){
-            auto inversed=obj_factory.make_halfspace(-*hs.get_upper_bound(),hs.is_strong());
+            auto inversed=obj_factory.make_halfspace(-*hs.get_upper_bound(),!hs.is_strong());
             halfspaces.push_back(
                 obj_factory.make_polyhedron({inversed}));
         }

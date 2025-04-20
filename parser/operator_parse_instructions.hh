@@ -10,8 +10,8 @@
 
 
 #include <vector>
+#include "../parser/debug.hh"
 #include "function_parse_architect.hh"
-#include "outparse.hh"
 namespace common_parsing{
 static Log OPERATOR_PARSE_LOGGER{true,"[OPERATOR_PARSE_INSTRUCTIONS_LOGGER]"};
 template<typename Res, typename Operand, typename Operator,
@@ -47,7 +47,7 @@ ParseResult<Res,Context,NoParseInfo> UseOperatorParseInstruction(Text target, Po
                     stop=true;
                 }else{
                     pos=get<ParseNode<Operand,Context>>(operand_res).end;
-                    operand_list_1.push_back(get<ParseNode<Operand,Context>>(operator_res).intreprete);
+                    operand_list_1.push_back(get<ParseNode<Operand,Context>>(operand_res).intreprete);
                     operator_list_2.push_back(get<ParseNode<Operator,Context>>(operator_res).intreprete);
                     succes_pos=pos;
                 }

@@ -35,15 +35,18 @@ Expr set_equal(LinearAlgebra<Expr,Coef> la, Expr expr, Expr component, Expr equa
 }
 template<typename Expr, ArifmetycOp Coef>
 Expr perpendicular_component(LinearAlgebra<Expr,Coef> la, Expr expr, Expr parallel){
-    return la.add(expr,la.mult(parallel,-project(la,expr,parallel)));
+    Coef k=project(la,expr,parallel);
+    Coef mk=-k;
+    Expr mult=la.mult(parallel,mk);
+    return la.add(expr,mult);
 }
 template<ArifmetycOp Coef,typename Expr> requires (LinearOp<Coef,Expr>)
 LinearAlgebra<Expr,Coef> make_algebra(std::function<Coef(Expr,Expr)> like_dot_product){
     return LinearAlgebra<Expr,Coef>{
-        [=](Expr v, Coef c){
+        [](Expr v, Coef c){
             return v*c;
         },
-        [=](Expr a, Expr b){
+        [](Expr a, Expr b){
             return a+b;
         },
         [=](Expr a, Expr b){

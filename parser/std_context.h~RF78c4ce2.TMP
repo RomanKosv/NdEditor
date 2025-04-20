@@ -277,11 +277,8 @@ struct StdContext{
                 [](EvalMaybe<Figure> arg){return arg.getOk();});\
             context_log.print("boolargs:");
             Figure res=boolargs[0];
-            context_log.print(to_str(res));
             for(size_t i=1; i<args.size(); i++){
-                context_log.print(to_str(boolargs[i]));
                 res=gs.union_of(res,boolargs[i]);
-                context_log.print("res: "+to_str(res));
             }
             return EvalMaybe<Figure>{res};
         }
@@ -348,10 +345,7 @@ struct StdContext{
         };
     }
     EvalMaybe<Figure> inverse(EvalMaybe<Figure> figure){
-        context_log.print("inverse"+to_str(figure));
         if(figure.isOk()){
-            Figure f=gs.inversion_of(figure.getOk());
-            context_log.print("inversed: "+to_str(f));
             return EvalMaybe<Figure>{gs.inversion_of(figure.getOk())};
         }else{
             return EvalMaybe<Figure>{figure.getErr()};
