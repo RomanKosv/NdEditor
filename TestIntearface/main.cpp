@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    WelcomeWindow window;
+    ModelEditor window;
     window.show();
 
     return app.exec();

@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-
+    /*
     SparseVector<double> vec(500);
     vec.coeffRef(1)=1;
     vec=vec;
@@ -19,5 +19,6 @@ int main()
     cout<<a.mult(vec,-0.0)<<"\n";
     LinearAlgebra<SparseVector<double>,double> b=a;
     cout<<b.mult(vec,-0.0)<<"\n";
+*/
     test_inequalyty_systems_and_num_expr_1();
 }

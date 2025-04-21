@@ -218,10 +218,18 @@ struct StdContext{
             for(size_t i=1; i<args.size(); i++){
                 if(ops[i-1]==MultOp::div){
                     EvalMaybe<NumExpr> divres=do_div(res,numargs[i]);
-                    if(!divres.isOk()) return divres;
+                    if(!divres.isOk()){
+                        return divres;
+                    }else{
+                        res=divres.getOk();
+                    }
                 }else{
                     EvalMaybe<NumExpr> multres=do_mult(res,numargs[i]);
-                    if(!multres.isOk()) return multres;
+                    if(!multres.isOk()){
+                        return multres;
+                    }else{
+                        res=multres.getOk();
+                    }
                 }
             }
             return EvalMaybe<NumExpr>{res};
