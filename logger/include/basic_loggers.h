@@ -12,12 +12,12 @@ struct with_input_prefix{
 
 struct BaseLogSystem {
     AddOverview<FileLog> save_log;
-    TwoLogs<TimePref<AddPrefix<FileLog&>>, decltype(cout)&> log;
-    InputLogger<MapLog<decltype(log.log1)&, with_input_prefix>> input;
+    Holder<TwoLogs<TimePref<AddPrefix<FileLog&>>, decltype(cout)&>> log;
+    Holder<InputLogger<MapLog<decltype(log.s.log1)&, with_input_prefix>>> input;
     BaseLogSystem(filesystem::path dir)
-        : save_log{{dir, FileLog::simple_time_path()}},
-        log{{{save_log.log, "\n"}}, {cout}},
-        input{{log.log1, {}}, cin}
+        : save_log{{dir, FileLog::simple_time_path()}, cin},
+        log{{{{save_log.log, "\n"}}, {cout}}},
+        input{{{log.s.log1, {}}, cin}}
     {
     }
 };
