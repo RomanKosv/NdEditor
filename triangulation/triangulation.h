@@ -8,7 +8,7 @@
 #include <tuple>
 #include <cmath>
 #include <vector>
-#include "../logger/basic_loggers.h"
+#include "basic_loggers.h"
 
 static BaseLogSystem log_sys{R"(..\..\..\logs\triangulation\)"};
 #define LOG log_sys.log

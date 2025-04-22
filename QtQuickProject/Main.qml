@@ -13,11 +13,67 @@ ApplicationWindow {
     visible: true
     title: "Custom Geometry Example"
 
+    NdModel{
+        id: model
+    }
+
+    Component{
+        id: entry_pattern
+        ObjectEntry{
+            name: "aaa"
+            expression: "bbbb"
+        }
+    }
+
+    ListModel{
+        id: object_list
+    }
+    Column {
+        id: column
+        width:50
+        anchors{
+            top:parent.top
+            bottom:parent.bottom
+            left:parent.left
+        }
+
+        ListView{
+            id: dispathcer
+            model: object_list
+            delegate: Item{
+                width : parent.width
+                height:20
+                required property string name
+                required property string expression
+                Row{
+                    anchors.fill : parent
+                    Text {
+                        text: name
+                    }
+                    Text{
+                        text: expression
+                    }
+                }
+            }
+        }
+    }
+    Button {
+        id : addButton
+        height : 20
+        width : 40
+        anchors{
+            left:parent.left
+            bottom:parent.bottom
+        }
+
+        onClicked: dispathcer.model.append({name: "aaaa", expression : "bbbbb"})
+    }
+
     // property bool isLandscape: width > height
 
     View3D {
         id: v3d
-        anchors.left: parent.left
+        anchors.left: column.right
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom

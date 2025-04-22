@@ -30,7 +30,9 @@ qt_add_qml_module(appQtQuickProject
         SOURCES triangles.h
         SOURCES triangle_geometry.cpp
         SOURCES
-# >>>>>>> origin/logger
+        SOURCES model.h model.cpp
+        SOURCES objectentry.h  objectentry.cpp
+# >>>>>>> origin/loggerr
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -51,6 +53,7 @@ target_link_libraries(appQtQuickProject
 #     Qt6::Gui
 # =======
     PRIVATE
+        triangulation
         Qt6::Quick
         Qt6::Quick3D
 # >>>>>>> origin/logger

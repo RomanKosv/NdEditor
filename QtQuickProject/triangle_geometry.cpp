@@ -2,9 +2,29 @@
 #include "triangle_geometry.h"
 #include <QRandomGenerator>
 #include <QVector3D>
+#include "triangulation_with_eigen_1.h"
 
 TriangleGeometry::TriangleGeometry()
 {
+    vector<Vector3f> normals={
+        {1, 0, 0},
+        {0, 1, 0},
+        {0, 0, 1},
+        {-1, 0, 0},
+        {0, -1, 0},
+        {0, 0, -1},
+        {1, 1, 1}
+    };
+    vector<float> distances = {1, 1, 1, 1, 1, 1, 2};
+    auto t=easy_triangulate(normals,distances);
+    triangles={};
+    for(auto i:t){
+        triangles.push_back({
+                             {get<0>(i).x(),get<0>(i).y(),get<0>(i).z()},
+                             {get<1>(i).x(),get<1>(i).y(),get<1>(i).z()},
+                             {get<2>(i).x(),get<2>(i).y(),get<2>(i).z()}
+        });
+    }
     updateData();
 }
 

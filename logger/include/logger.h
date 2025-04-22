@@ -1,5 +1,4 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 // <<<<<<< HEAD
 // #include <iostream>
@@ -48,23 +47,9 @@
 
 using namespace std;
 
-string get_date_and_time(char sep = '-') {
-    auto tm = time(nullptr);
-    char string_t[20];
-    strftime(data(string_t), 20, "%F %H-%M-%S", localtime(&tm));
-    string str{string_t, 19};
-    replace(str.begin(), str.end(), '-', sep);
-    return str;
-}
+string get_date_and_time_(char sep = '-');
 
-string get_time(char sep = '-') {
-    auto tm = time(nullptr);
-    char string_t[9];
-    strftime(data(string_t), 9, "%H-%M-%S", localtime(&tm));
-    string str{string_t, 8};
-    replace(str.begin(), str.end(), '-', sep);
-    return str;
-}
+string get_time_(char sep = '-');
 
 template<typename Log>
 class TimePref{
@@ -78,7 +63,7 @@ public:
 
 template<typename L, typename Obj>
 decltype(auto) operator <<(TimePref<L>& log, Obj obj) {
-    return log.log<<log.pref<< get_time(':') << log.postf << obj;
+    return log.log<<log.pref<< get_time_(':') << log.postf << obj;
 }
 
 // template<typename Log>
@@ -127,7 +112,7 @@ public:
     }
 
     static filesystem::path simple_time_path(){
-        return get_date_and_time()+".txt";
+        return get_date_and_time_()+".txt";
     }
     ~FileLog() {
         file.close();
@@ -174,30 +159,30 @@ decltype(auto) operator <<(TwoLogs<Log1, Log2>& log_, Obj obj) {
     return TwoLogs<decltype(log_.log1<<obj), decltype(log_.log2<<obj)>{log_.log1 << obj, log_.log2 << obj};
 }
 
-template<typename Log, typename Obj>
-decltype(auto) operator <<(Log log, Obj obj) {
-    Log& ref = log;
-    return ref << obj;
-}
+// template<typename Log, typename Obj>
+// decltype(auto) operator <<(Log log, Obj obj) {
+//     Log& ref = log;
+//     return ref << obj;
+// }
 
 template<typename Log>
 AddPrefix<Log> startOnLine(Log log) {
     return {log, "\n"};
 }
 
-template<typename Log>
+template<typename Log, typename Inp = decltype(cin)&>
 struct AddOverview{
     Log log;
+    Inp in;
     string prefix = "\n##################################\nOverview:\n";
     string postfix = "\n##################################\n";
     ~AddOverview() {
-        cin.clear();
-        cout << 1 << (int) cin.tellg();
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        cout << "\nInput overview (one line):" <<endl;
+        // in.clear();
+        // in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        log << "\nInput overview (one line):" <<'\n';
         string overview;
-        getline(cin, overview);
-        log << prefix << overview << postfix;
+        getline(in, overview);
+        log << prefix << overview.data() << postfix;
     }
 };
 
@@ -216,7 +201,7 @@ struct InputLogger{
 };
 
 template<typename Log, typename Inp, typename Obj>
-decltype(auto) operator>>(InputLogger<Log, Inp> input, Obj &obj) {
+decltype(auto) operator>>(InputLogger<Log, Inp>& input, Obj &obj) {
     decltype(auto) new_inp = input.input>>obj;
     return InputLogger<decltype(input.log<<obj), decltype(input.input>>obj)>{input.log<<obj, new_inp};
 }
@@ -226,6 +211,27 @@ decltype(auto) getline(InputLogger<Log, Inp>& input, Str& str) {
     decltype(auto) new_inp = getline(input.input, str);
     return InputLogger<decltype(input.log<<str), decltype(getline(input.input, str))>{input.log<<str, new_inp};
 }
+
+template<typename S>
+struct Holder{
+    S s;
+};
+
+template<typename S, typename Obj>
+decltype(auto) operator <<(Holder<S> h, Obj o) {
+    return Holder<decltype(h.s<<o)>{h.s<<o};
+}
+
+template<typename S, typename O>
+decltype(auto) operator >>(Holder<S> h, O& o) {
+    return Holder<decltype(h.s>>o)>{h.s>>o};
+}
+
+template<typename S, typename O>
+decltype(auto) getline(Holder<S> h, O& o) {
+    return Holder<decltype(getline(h.s, o))>{getline(h.s, o)};
+}
+
 // >>>>>>> origin/logger
 
-#endif // LOGGER_H
+// #endif // LOGGER_H
