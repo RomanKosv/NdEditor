@@ -29,49 +29,64 @@ ApplicationWindow {
         id: object_list
     }
     Item{
-        id: column
+        id: dispathcer
+
+        property int name_width: 40
+        property int expression_width: 100
+
+        width: name_width+expression_width
         anchors{
             left: parent.left
             top: parent.top
             bottom: parent.bottom
         }
-        width: 70
-        ListView{
-            id: dispathcer
-            model: object_list
+        ScrollView{
+            id : list_scroll
             anchors{
-                left:parent.left
+                left: parent.left
+                right: parent.right
                 top: parent.top
                 bottom: addButton.top
             }
-            width: parent.width
-            delegate: Item{
-                width : parent.width
-                height:20
-                required property string name
-                required property string expression
-                Row{
-                    anchors.fill : parent
-                    Text {
-                        text: name
-                    }
-                    Text{
-                        text: expression
+            ListView{
+                id: object_list_view
+                model: object_list
+                width: parent.width
+                anchors.fill : parent
+
+                delegate: Item{
+                    width : parent.width
+                    height: Math.max(name_field.contentHeight, exp_field.contentHeight)
+                    required property string name
+                    required property string expression
+                    Row{
+                        anchors.fill : parent
+                        TextArea {
+                            id: name_field
+                            text: name
+                            width: dispathcer.name_width
+                            wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
+                        }
+                        TextArea {
+                            id: exp_field
+                            text: expression
+                            width: dispathcer.expression_width
+                            wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
+                        }
                     }
                 }
             }
         }
         Button {
             id : addButton
-            height : 20
+            height : 30
             width : parent.width
             anchors{
                 left:parent.left
                 bottom:parent.bottom
             }
-
             onClicked: {
-                dispathcer.model.append({name: "aaaa", expression : "bbbbb"})
+                object_list.append({name: "aaaa", expression : "bbbbb"})
             }
         }
     }
@@ -80,7 +95,7 @@ ApplicationWindow {
 
     View3D {
         id: v3d
-        anchors.left: column.right
+        anchors.left: dispathcer.right
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
