@@ -28,18 +28,23 @@ ApplicationWindow {
     ListModel{
         id: object_list
     }
-    Column {
+    Item{
         id: column
-        width:50
         anchors{
-            top:parent.top
-            bottom:parent.bottom
-            left:parent.left
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
         }
-
+        width: 70
         ListView{
             id: dispathcer
             model: object_list
+            anchors{
+                left:parent.left
+                top: parent.top
+                bottom: addButton.top
+            }
+            width: parent.width
             delegate: Item{
                 width : parent.width
                 height:20
@@ -56,17 +61,19 @@ ApplicationWindow {
                 }
             }
         }
-    }
-    Button {
-        id : addButton
-        height : 20
-        width : 40
-        anchors{
-            left:parent.left
-            bottom:parent.bottom
-        }
+        Button {
+            id : addButton
+            height : 20
+            width : parent.width
+            anchors{
+                left:parent.left
+                bottom:parent.bottom
+            }
 
-        onClicked: dispathcer.model.append({name: "aaaa", expression : "bbbbb"})
+            onClicked: {
+                dispathcer.model.append({name: "aaaa", expression : "bbbbb"})
+            }
+        }
     }
 
     // property bool isLandscape: width > height
