@@ -1,7 +1,12 @@
 #include "triangulation.h"
 #include <vector>
+#include <iostream>
+// #include "basic_loggers.h"
 
 using namespace Triangulation;
+
+// static BaseLogSystem log_sys{R"(..\..\..\logs\triangulation\main\)"};
+#define LOG std::cout
 
 int main(int argc, char *argv[]) {
     std::vector<Halfspace3d> cube{{{1, 0, 0}, 1}, {{-1, 0, 0}, 1}, {{0, 1, 0}, 1}, {{0, -1, 0}, 1}, {{0 ,0 ,1}, 1}, {{0, 0, -1}, 1}};
