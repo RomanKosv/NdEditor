@@ -20,7 +20,7 @@ ApplicationWindow {
     Component{
         id: entry_pattern
         ObjectEntry{
-            name: "aaa"
+            name: "aaa___"
             expression: "bbbb"
         }
     }
@@ -57,19 +57,20 @@ ApplicationWindow {
                 delegate: Item{
                     width : parent.width
                     height: Math.max(name_field.contentHeight, exp_field.contentHeight)
-                    required property string name
-                    required property string expression
+                    // required property string name
+                    // required property string expression
+                    required property var entry
                     Row{
                         anchors.fill : parent
                         TextArea {
                             id: name_field
-                            text: name
+                            text: entry.name
                             width: dispathcer.name_width
                             wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
                         }
                         TextArea {
                             id: exp_field
-                            text: expression
+                            text: entry.expression
                             width: dispathcer.expression_width
                             wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
                         }
@@ -86,7 +87,7 @@ ApplicationWindow {
                 bottom:parent.bottom
             }
             onClicked: {
-                object_list.append({name: "aaaa", expression : "bbbbb"})
+                object_list.append({entry : entry_pattern.createObject()/*name: "aaaa", expression : "bbbbb"*/})
             }
         }
     }
