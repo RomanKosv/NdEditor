@@ -53,6 +53,12 @@ struct ExprResSucces{
     Figure get_figure(){
         return get<Figure>(res);
     }
+    bool is_num() const{
+        return res.index()==0;
+    }
+    bool is_logic() const{
+        return res.index()==1;
+    }
 };
 template<typename T>
 struct EvalMaybe{

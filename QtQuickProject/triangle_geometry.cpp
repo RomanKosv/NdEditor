@@ -2,7 +2,7 @@
 #include "triangle_geometry.h"
 #include <QRandomGenerator>
 #include <QVector3D>
-#include "triangulation_with_eigen_1.h"
+#include "strings_to_screen_version1.h"
 
 TriangleGeometry::TriangleGeometry()
 {
@@ -28,7 +28,6 @@ TriangleGeometry::TriangleGeometry()
     updateData();
 }
 
-//! [update data]
 void TriangleGeometry::updateData()
 {
     clear();
@@ -52,4 +51,13 @@ void TriangleGeometry::updateData()
                  QQuick3DGeometry::Attribute::F32Type);
 
 }
-//! [update data]
+
+void TriangleGeometry::setModel(Model* m)
+{
+    //обработать полиэдры и подать в triangles
+    strings_to_screen_version1 pipeline;
+    auto c=pipeline.get_standart_context();
+    triangles=pipeline.get_render(*m,c);
+    updateData();
+    update();
+}

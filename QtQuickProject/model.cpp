@@ -11,3 +11,8 @@ void Model::clear()
 {
     objects.clear();
 }
+
+QVector<ObjectEntry *> Model::get_objects()
+{
+    return objects;
+}

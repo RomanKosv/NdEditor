@@ -32,6 +32,7 @@ qt_add_qml_module(appQtQuickProject
         SOURCES
         SOURCES model.h model.cpp
         SOURCES objectentry.h  objectentry.cpp
+        SOURCES strings_to_screen_version1.h strings_to_screen_version1.cpp
 # >>>>>>> origin/loggerr
 )
 
@@ -53,6 +54,7 @@ target_link_libraries(appQtQuickProject
 #     Qt6::Gui
 # =======
     PRIVATE
+        NdEditorLib
         triangulation
         Qt6::Quick
         Qt6::Quick3D

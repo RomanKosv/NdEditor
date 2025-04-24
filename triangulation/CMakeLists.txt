@@ -10,7 +10,8 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 add_library(triangulation
     triangulation.h
     triangulation_with_eigen_1.h
-    optimized_eigein_triangulation.h)
+    optimized_eigein_triangulation.h
+    triangulation_with_eigen_1.cpp)
 target_include_directories(triangulation PUBLIC .)
 target_link_libraries (triangulation Eigen3::Eigen logger)
 include(GNUInstallDirs)

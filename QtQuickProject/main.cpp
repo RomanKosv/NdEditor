@@ -1,9 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
+#include "parser/outparse.hh"
 
 int main(int argc, char *argv[])
 {
+    common_parsing::OUTPARSE_LOGGER.flag=false;
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;

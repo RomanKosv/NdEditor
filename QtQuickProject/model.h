@@ -13,6 +13,7 @@ public:
     Model();
     Q_INVOKABLE void add_element(ObjectEntry*);
     Q_INVOKABLE void clear();
+    QVector<ObjectEntry*> get_objects();
 };
 
 #endif // MODEL_H

@@ -31,48 +31,100 @@ ApplicationWindow {
     Item{
         id: dispathcer
 
-        property int name_width: 40
-        property int expression_width: 100
+        property double name_width: name_header.width
+        property double expression_width: width - name_width
 
-        width: name_width+expression_width
+        width: 200
         anchors{
             left: parent.left
             top: parent.top
             bottom: parent.bottom
         }
+        SplitView{
+            id: headers
+            anchors{
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: 30
+            Text{
+                id: name_header
+                SplitView.preferredWidth: 40
+                SplitView.minimumWidth: 20
+                height: parent.height
+                text: "name"
+            }
+            Text{
+                id: expression_header
+                SplitView.preferredWidth: 100
+                SplitView.minimumWidth: 20
+                height: parent.height
+                text: "expression"
+            }
+        }
+
         ScrollView{
             id : list_scroll
             anchors{
                 left: parent.left
                 right: parent.right
-                top: parent.top
+                top: headers.bottom
                 bottom: addButton.top
             }
+            clip: true
             ListView{
                 id: object_list_view
                 model: object_list
-                width: parent.width
                 anchors.fill : parent
 
                 delegate: Item{
+                    id: listItem
                     width : parent.width
-                    height: Math.max(name_field.contentHeight, exp_field.contentHeight)
+                    property double additionalHeight: 8
+                    height: Math.max(name_field.contentHeight, exp_field.contentHeight) + additionalHeight
+                    // onHeightChanged: {
+                    //     console.log(entry.name)
+                    //     console.log(entry.expression)
+                    // }
                     // required property string name
                     // required property string expression
                     required property var entry
+                    // property bool isNew: true
+                    // Component.onCompleted: {
+                    //     isNew = false
+                    // }
+
                     Row{
-                        anchors.fill : parent
+                        id: fields
+                        anchors.fill: parent
                         TextArea {
                             id: name_field
                             text: entry.name
                             width: dispathcer.name_width
                             wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
+                            // onWidthChanged: {
+                            //     console.log("new width:", width)
+                            //     if(!listItem.isNew) dispathcer.name_width = width
+                            // }
+                            onTextChanged: {
+                                console.log("change")
+                                entry.name = text
+                            }
                         }
                         TextArea {
                             id: exp_field
                             text: entry.expression
                             width: dispathcer.expression_width
                             wrapMode: TextArea.WrapAtWordBoundaryOrAnywhere
+                            // onWidthChanged: {
+                            //     console.log("new width:", width)
+                            //     if(!listItem.isNew) dispathcer.expression_width = width
+                            // }
+                            onTextChanged: {
+                                console.log("change")
+                                entry.expression = text
+                            }
                         }
                     }
                 }
@@ -84,10 +136,27 @@ ApplicationWindow {
             width : parent.width
             anchors{
                 left:parent.left
-                bottom:parent.bottom
+                bottom:runButton.top
             }
             onClicked: {
                 object_list.append({entry : entry_pattern.createObject()/*name: "aaaa", expression : "bbbbb"*/})
+            }
+        }
+        Button{
+            id: runButton
+            height : 30
+            width : parent.width
+            anchors{
+                left: parent.left
+                bottom: parent.bottom
+            }
+            onClicked: {
+                model.clear()
+                for(var i = 0; i < object_list.count; i++){
+                    model.add_element(object_list.get(i).entry)
+                    console.log(object_list.get(i).entry.name, object_list.get(i).entry.expression)
+                }
+                geometry.setModel(model)
             }
         }
     }
@@ -138,6 +207,7 @@ ApplicationWindow {
             visible: true
             scale: Qt.vector3d(100, 100, 100)
             geometry: TriangleGeometry {
+                id: geometry
                 // normals: cbNorm.checked
                 // normalXY: sliderNorm.value
                 // uv: cbUV.checked

@@ -2,7 +2,9 @@
 #define EXAMPLEGEOMETRY_H
 
 #include <QQuick3DGeometry>
+#include "model.h"
 #include "triangles.h"
+
 
 //! [triangle geometry]
 class TriangleGeometry : public QQuick3DGeometry
@@ -16,6 +18,7 @@ class TriangleGeometry : public QQuick3DGeometry
 
 public:
     TriangleGeometry();
+    Q_INVOKABLE void setModel(Model*);
 
     // bool normals() const { return m_hasNormals; }
     // void setNormals(bool enable);
