@@ -219,9 +219,10 @@ ApplicationWindow {
                     //     id: baseColorMap
                     //     source: "qt_logo_rect.png"
                     // }
+                    // baseColor: Qt.green
                     cullMode: PrincipledMaterial.NoCulling
                     // baseColorMap: cbTexture.checked ? baseColorMap : null
-                    // specularAmount: 0.5
+                    specularAmount: 0.5
                 }
             ]
         }

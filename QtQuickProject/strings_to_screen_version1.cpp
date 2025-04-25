@@ -1,5 +1,15 @@
 #include "strings_to_screen_version1.h"
 
+float strings_to_screen_version1::out_box_distance = 100;
+vector<Vector3f> strings_to_screen_version1::out_box_normals{
+    {1, 0, 0},
+    {-1, 0, 0},
+    {0, 1, 0},
+    {0, -1, 0},
+    {0, 0, 1},
+    {0, 0, -1}
+};
+
 strings_to_screen_version1::strings_to_screen_version1() {
 }
 
@@ -11,6 +21,10 @@ vector<triangle> strings_to_screen_version1::get_render(Model & m, Context & c)
     for(Figure& f:figures){
         vector<tuple<vector<Vector3f>, vector<float> >> f_3d=imagine_3d(f);
         for(tuple<vector<Vector3f>, vector<float> >& p:f_3d){
+            for(auto& out_n : out_box_normals){
+                get<0>(p).push_back(out_n);
+                get<1>(p).push_back(out_box_distance);
+            }
             for(triangle& t:triangulate(get<0>(p),get<1>(p))){
                 triangles.push_back(t);
             }
@@ -53,7 +67,13 @@ tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(P
 vector<tuple<vector<Vector3f>, vector<float> > > strings_to_screen_version1::imagine_3d(Figure & figure)
 {
     vector<tuple<vector<Vector3f>, vector<float> > > res;
-    for(Polyhedron& p:*figure.get_components()){
+    vector<NumExpr> space={
+        default_context.space.get_scale(),
+        default_context.space.get_one(default_context.space.x),
+        default_context.space.get_one(default_context.space.y),
+        default_context.space.get_one(default_context.space.z)
+    };
+    for(Polyhedron& p:*default_context.gs.project_in(figure,space).get_components()){
         res.push_back(imagine_3d(p));
     }
     return res;

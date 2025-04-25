@@ -22,6 +22,8 @@ using concrete_parsing_1::Scalar;
 class strings_to_screen_version1
 {
 public:
+    static vector<Vector3f> out_box_normals;
+    static float out_box_distance;
     typedef concrete_parsing_1::Figure Figure;
     typedef ParseResult<EvalMaybe<concrete_parsing_1::ExprResSucces>,StdContext,NoParseSintaxInfo> ParseRes;
     typedef EvalMaybe<concrete_parsing_1::ExprResSucces> Object;
