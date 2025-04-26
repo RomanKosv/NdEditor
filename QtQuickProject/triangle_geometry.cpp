@@ -32,7 +32,7 @@ void TriangleGeometry::updateData()
 {
     clear();
 
-    static_assert(sizeof(triangle) ==3*3*sizeof(float));
+    static_assert(sizeof(triangle) ==3*sizeof(vec3));
     // int stride = 3 * sizeof(float);
     // assert(stride == sizeof(vec3));
 
@@ -49,6 +49,11 @@ void TriangleGeometry::updateData()
     addAttribute(QQuick3DGeometry::Attribute::PositionSemantic,
                  0,
                  QQuick3DGeometry::Attribute::F32Type);
+    addAttribute(
+        QQuick3DGeometry::Attribute::ColorSemantic,
+        3*sizeof(float),
+        QQuick3DGeometry::Attribute::F32Type
+        );
 
 }
 

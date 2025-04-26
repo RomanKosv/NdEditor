@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import QtQuick3D
 import QtQuick3D.Helpers
 import QtQuickProject
+import QtQuick.Dialogs
 
 ApplicationWindow {
     id: window
@@ -20,8 +21,9 @@ ApplicationWindow {
     Component{
         id: entry_pattern
         ObjectEntry{
-            name: "aaa___"
-            expression: "bbbb"
+            name: ""
+            expression: ""
+            color: Qt.color("green")
         }
     }
 
@@ -30,9 +32,10 @@ ApplicationWindow {
     }
     Item{
         id: dispathcer
+        property double color_indent: 20
 
         property double name_width: name_header.width
-        property double expression_width: width - name_width
+        property double expression_width: width - color_indent - name_width
 
         width: 200
         anchors{
@@ -43,6 +46,7 @@ ApplicationWindow {
         SplitView{
             id: headers
             anchors{
+                leftMargin : dispathcer.color_indent
                 top: parent.top
                 left: parent.left
                 right: parent.right
@@ -95,9 +99,31 @@ ApplicationWindow {
                     //     isNew = false
                     // }
 
+                    ColorDialog{
+                        id: colorSelector
+                        onAccepted: {
+                            // console.log(entry.color, colorSelector.color)
+                            entry.color = selectedColor
+                        }
+                    }
+
                     Row{
                         id: fields
                         anchors.fill: parent
+                        Button{
+                            id: colorButton
+                            width: dispathcer.color_indent
+                            height: parent.height
+                            background: Rectangle{
+                                anchors.fill: colorButton
+                                color: entry.color
+                            }
+
+                            onClicked: {
+                                colorSelector.open()
+                            }
+                        }
+
                         TextArea {
                             id: name_field
                             text: entry.name
@@ -190,14 +216,14 @@ ApplicationWindow {
 
         DirectionalLight {
             id: directionalLight
-            color: Qt.rgba(0.4, 0.2, 0.6, 1.0)
-            ambientColor: Qt.rgba(0.1, 0.1, 0.1, 1.0)
+            color: Qt.rgba(1, 1, 1, 1.0)
+            ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
         }
 
         PointLight {
             id: pointLight
-            position: Qt.vector3d(0, 0, 100)
-            color: Qt.rgba(0.1, 1.0, 0.1, 1.0)
+            position: cameraNode.position
+            color: Qt.rgba(1, 1, 1, 1)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
         }
 

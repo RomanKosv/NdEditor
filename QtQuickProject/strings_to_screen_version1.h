@@ -37,6 +37,7 @@ public:
     vector<Figure> search_figures(vector<Object>&);
     vector<Object> intreprete(Model&,Context&);
     Context get_standart_context();
+    std::optional<Object> intreprete(ObjectEntry*, Context&);
 private:
     Context default_context;
 };

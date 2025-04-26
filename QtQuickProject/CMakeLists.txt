@@ -33,6 +33,7 @@ qt_add_qml_module(appQtQuickProject
         SOURCES model.h model.cpp
         SOURCES objectentry.h  objectentry.cpp
         SOURCES strings_to_screen_version1.h strings_to_screen_version1.cpp
+        RESOURCES test_ndeditor_expressions
 # >>>>>>> origin/loggerr
 )
 

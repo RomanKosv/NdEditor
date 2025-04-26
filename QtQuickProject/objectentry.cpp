@@ -1,6 +1,13 @@
 #include "objectentry.h"
 
-ObjectEntry::ObjectEntry() {}
+// std::vector<triangle> ObjectEntry::triangulate()
+// {
+
+// }
+
+ObjectEntry::ObjectEntry() {
+    setColor(QColor::fromRgbF(1, 0, 0, 1));
+}
 
 void ObjectEntry::setName(QString s){
     _name=s;
@@ -18,4 +25,15 @@ void ObjectEntry::setExpression(QString exp) {
 
 QString ObjectEntry::expression() {
     return _expression;
+}
+
+void ObjectEntry::setColor(QColor color_)
+{
+    _color = color_;
+    emit colorChanged(_color);
+}
+
+QColor ObjectEntry::color()
+{
+    return _color;
 }
