@@ -19,7 +19,7 @@ strings_to_screen_version1::strings_to_screen_version1() {
         default_context.dim_names[id]=string{c};
     }
 }
-
+/*
 vector<triangle> strings_to_screen_version1::get_render(Model & m, Context & c)
 {
     // vector<Object> res=intreprete(m,c);
@@ -62,7 +62,7 @@ vector<triangle> strings_to_screen_version1::get_render(Model & m, Context & c)
     }
     return triangles;
 }
-
+*/
 vector<triangle> strings_to_screen_version1::triangulate(vector<Vector3f> normals, vector<float> distances, float epsilon)
 {
     auto t=easy_triangulate(normals,distances,epsilon);
@@ -77,13 +77,13 @@ vector<triangle> strings_to_screen_version1::triangulate(vector<Vector3f> normal
     return triangles;
 }
 
-tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(Polyhedron & figure)
+tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(Polyhedra & figure)
 {
     vector<Vector3f> normals;
     vector<float> distanses;
-    typedef nd_geometry::HalfSpace<concrete_parsing_1::NumExpr> HalfSpace;
+    typedef nd_geometry::HalfSpace<concrete_parsing_ver_2::NumExpr> HalfSpace;
     for(HalfSpace& hs:*figure.get_faces()){
-        concrete_parsing_1::NumExpr expr=*hs.get_upper_bound();
+        concrete_parsing_ver_2::NumExpr expr=*hs.get_upper_bound();
         Vector3f vec;
         vec.x()=linear_algebra_utilites::project(default_context.algebra,expr,default_context.space.get_one(default_context.space.x));
         vec.y()=linear_algebra_utilites::project(default_context.algebra,expr,default_context.space.get_one(default_context.space.y));
@@ -103,41 +103,27 @@ vector<tuple<vector<Vector3f>, vector<float> > > strings_to_screen_version1::ima
         default_context.space.get_one(default_context.space.y),
         default_context.space.get_one(default_context.space.z)
     };
-    auto projected=default_context.gs.project_in(figure,space);
-    string s=default_context.to_str(projected);
-    for(Polyhedron& p:*projected.get_components()){
+    //auto projected=default_context.gs.project_in(figure,space);
+    string s=default_context.to_str(figure);
+    for(Polyhedra& p:*figure.get_components()){
         res.push_back(imagine_3d(p));
     }
     return res;
 }
 
-strings_to_screen_version1::Context strings_to_screen_version1::get_standart_context()
+Context strings_to_screen_version1::get_standart_context()
 {
     return default_context;
 }
-template<typename Res, typename Context, typename Info>
-ParseNode<Res,Context> get_node(ParseResult<Res,Context,Info> res){
-    return get<ParseNode<Res,Context>>(res);
-}
-template<typename Res, typename Context>
-ParseResult<Res,Context,NoParseSintaxInfo> to_end(ParseResult<Res,Context,NoParseSintaxInfo> res){
-    if(common_parsing::isOk(res)){
-        auto node=get_node(res);
-        if(node.end!=node.target->length()){
-            return NotParseNode<NoParseSintaxInfo>{node.start,node.target,NoParseSintaxInfo{"not parse to end"}};
-        }
-    }
-    return res;
-}
-
+/*
 std::optional<strings_to_screen_version1::Object> strings_to_screen_version1::intreprete(ObjectEntry *entry, Context &context)
 {
     QString name=entry->name();
     QString data=entry->expression();
     Text t_name=make_shared<string>(name.toStdString());
     Text t_expr=make_shared<string>(data.toStdString());
-    auto p_name=to_end(concrete_parsing_1::p_name(t_name,0));
-    auto p_expr=to_end(concrete_parsing_1::p_eval_layer(t_expr,0));
+    auto p_name=to_end(concrete_parsing_ver_2::p_name(t_name,0));
+    auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
     if(!common_parsing::isOk(p_name)){
         cout<<"no name: "+*t_name<<"\n";
         return std::nullopt;
@@ -163,9 +149,9 @@ std::optional<strings_to_screen_version1::Object> strings_to_screen_version1::in
         }
     }
 }
+*/
 
-
-
+/*
 vector<strings_to_screen_version1::Object> strings_to_screen_version1::intreprete(Model & m, Context & c)
 {
     vector<strings_to_screen_version1::Object> res;
@@ -174,8 +160,8 @@ vector<strings_to_screen_version1::Object> strings_to_screen_version1::intrepret
         QString data=entry->expression();
         Text t_name=make_shared<string>(name.toStdString());
         Text t_expr=make_shared<string>(data.toStdString());
-        auto p_name=to_end(concrete_parsing_1::p_name(t_name,0));
-        auto p_expr=to_end(concrete_parsing_1::p_eval_layer(t_expr,0));
+        auto p_name=to_end(concrete_parsing_ver_2::p_name(t_name,0));
+        auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
         if(!common_parsing::isOk(p_name)){
             cout<<"no name: "+*t_name<<"\n";
         }else if(!common_parsing::isOk(p_expr)){
@@ -199,8 +185,8 @@ vector<strings_to_screen_version1::Object> strings_to_screen_version1::intrepret
     }
     return res;
 }
-
-vector<strings_to_screen_version1::Figure> strings_to_screen_version1::search_figures(vector<Object> & obj)
+*/
+vector<Figure> strings_to_screen_version1::search_figures(vector<Object> & obj)
 {
     vector<Figure> res;
     for(Object& o:obj){

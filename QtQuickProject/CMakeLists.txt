@@ -56,6 +56,7 @@ target_link_libraries(appQtQuickProject
 # =======
     PRIVATE
         NdEditorLib
+        Parser_ver_2
         triangulation
         Qt6::Quick
         Qt6::Quick3D

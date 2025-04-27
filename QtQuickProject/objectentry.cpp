@@ -37,3 +37,89 @@ QColor ObjectEntry::color()
 {
     return _color;
 }
+
+void ObjectEntry::setVisible(bool val)
+{
+    _visible=val;
+}
+
+bool ObjectEntry::visible()
+{
+    return _visible;
+}
+
+void ObjectEntry::setProject(bool new_project)
+{
+    _project=new_project;
+}
+
+bool ObjectEntry::project()
+{
+    return _project;
+}
+
+std::optional<Object> ObjectEntry::intreprete(Context & context)
+{
+    QString name=this->name();
+    QString data=this->expression();
+    Text t_name=make_shared<string>(name.toStdString());
+    Text t_expr=make_shared<string>(data.toStdString());
+    auto p_name=to_end(concrete_parsing_ver_2::p_name(t_name,0));
+    auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
+    std::regex r(R"(\s*)");
+    bool empty_name=std::regex_match(*t_name,r);//если имя не указано
+    if(!(common_parsing::isOk(p_name)||empty_name)){
+        cout<<"no name: "+*t_name<<"\n";
+        return std::nullopt;
+    }else if(!common_parsing::isOk(p_expr)){
+        cout<<"no expr: "+*t_expr<<"\n";
+        return std::nullopt;
+    }else{
+        //auto n_name=get_node(p_name);
+        auto n_expr=get_node(p_expr);
+        //string v_name=n_name.intreprete(context);
+        Object v_expr=n_expr.intreprete(context);
+        if(empty_name){
+            return v_expr;
+        }else{
+            auto n_name=get_node(p_name);
+            string v_name=n_name.intreprete(context);
+            if(!context.vars.contains(v_name)){
+                if(v_expr.isOk()){
+                    context.vars[v_name]=v_expr.getOk();
+                    return v_expr;
+                }else{
+                    cout<<"expr err: "+*t_expr<<" try set name: "<<v_name<<"\n";
+                    return std::nullopt;
+                }
+            }else{
+                cout<<"name already exist: "+*t_name<<"\n";
+                return std::nullopt;
+            }
+        }
+    }
+}
+
+std::optional<Figure> ObjectEntry::get_render_figure(Context &context)
+{
+    auto object=intreprete(context);
+    if(object.has_value()){
+        if(object.value().isOk()&&object.value().getOk().is_logic()){
+            if(visible()){
+                if(project()){
+                    //strings_to_screen_version1 pipeline;
+                    vector<NumExpr> space={
+                        context.space.get_scale(),
+                        context.space.get_one(context.space.x),
+                        context.space.get_one(context.space.y),
+                        context.space.get_one(context.space.z)
+                    };
+                    return context.gs.project_in(object.value().getOk().get_figure(),space);
+                }else{
+                    return object.value().getOk().get_figure();
+                }
+            }
+        }
+    }
+    return std::nullopt;
+}

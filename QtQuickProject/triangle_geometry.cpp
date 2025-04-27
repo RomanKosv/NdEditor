@@ -1,8 +1,6 @@
 
 #include "triangle_geometry.h"
-#include <QRandomGenerator>
-#include <QVector3D>
-#include "strings_to_screen_version1.h"
+//#include "strings_to_screen_version1.h"
 
 TriangleGeometry::TriangleGeometry()
 {
@@ -62,7 +60,7 @@ void TriangleGeometry::setModel(Model* m)
     //обработать полиэдры и подать в triangles
     strings_to_screen_version1 pipeline;
     auto c=pipeline.get_standart_context();
-    triangles=pipeline.get_render(*m,c);
+    triangles=m->get_render(c);
     updateData();
     update();
 }

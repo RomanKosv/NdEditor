@@ -33,11 +33,11 @@ ApplicationWindow {
     Item{
         id: dispathcer
         property double color_indent: 20
-
+        property double flagsPostfix : 30
         property double name_width: name_header.width
-        property double expression_width: width - color_indent - name_width
+        property double expression_width: width - color_indent - name_width - flagsPostfix
 
-        width: 200
+        width: 250
         anchors{
             left: parent.left
             top: parent.top
@@ -152,6 +152,24 @@ ApplicationWindow {
                                 entry.expression = text
                             }
                         }
+                        CheckBox {
+                                id: is_visible_check_box
+                                text: "visible"
+                                checked: true
+                                width: dispathcer.flagsPostfix/2
+                                onCheckedChanged: {
+                                    entry.visible = checked
+                                }
+                        }
+                        CheckBox {
+                                id: is_project_check_box
+                                text: "project"
+                                checked: false
+                                width: dispathcer.flagsPostfix/2
+                                onCheckedChanged: {
+                                    entry.project = checked
+                                }
+                        }
                     }
                 }
             }
@@ -177,6 +195,10 @@ ApplicationWindow {
                 bottom: parent.bottom
             }
             onClicked: {
+                for(var j = 0; j < model.get_objects().count; j++) {
+                    console.log(model.get_objects()[j].name, model.get_objects()[j].entry)
+                }
+
                 model.clear()
                 for(var i = 0; i < object_list.count; i++){
                     model.add_element(object_list.get(i).entry)
@@ -225,7 +247,9 @@ ApplicationWindow {
             position: cameraNode.position
             color: Qt.rgba(1, 1, 1, 1)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+
         }
+        Binding{pointLight.position : cameraNode.position}
 
         //! [model triangle]
         Model {

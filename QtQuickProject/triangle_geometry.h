@@ -4,7 +4,8 @@
 #include <QQuick3DGeometry>
 #include "model.h"
 #include "triangles.h"
-
+#include <QRandomGenerator>
+#include <QVector3D>
 
 //! [triangle geometry]
 class TriangleGeometry : public QQuick3DGeometry
