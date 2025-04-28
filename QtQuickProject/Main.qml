@@ -35,7 +35,8 @@ ApplicationWindow {
         property double color_indent: 20
         property double flagsPostfix : 30
         property double name_width: name_header.width
-        property double expression_width: width - color_indent - name_width - flagsPostfix
+        property double scrooller_width: 15
+        property double expression_width: width - color_indent - name_width - flagsPostfix - scrooller_width
 
         width: 250
         anchors{
@@ -115,7 +116,7 @@ ApplicationWindow {
                             width: dispathcer.color_indent
                             height: parent.height
                             background: Rectangle{
-                                anchors.fill: colorButton
+                                // anchors.fill: colorButton
                                 color: entry.color
                             }
 
@@ -160,6 +161,8 @@ ApplicationWindow {
                                 onCheckedChanged: {
                                     entry.visible = checked
                                 }
+                                ToolTip.visible: hovered
+                                ToolTip.text: "turn on/off visibility"
                         }
                         CheckBox {
                                 id: is_project_check_box
@@ -169,6 +172,8 @@ ApplicationWindow {
                                 onCheckedChanged: {
                                     entry.project = checked
                                 }
+                                ToolTip.visible: hovered
+                                ToolTip.text: "turn on/off projection"
                         }
                     }
                 }
@@ -185,6 +190,7 @@ ApplicationWindow {
             onClicked: {
                 object_list.append({entry : entry_pattern.createObject()/*name: "aaaa", expression : "bbbbb"*/})
             }
+            text: "Add object"
         }
         Button{
             id: runButton
@@ -206,6 +212,7 @@ ApplicationWindow {
                 }
                 geometry.setModel(model)
             }
+            text: "Update scene"
         }
     }
 
@@ -240,6 +247,7 @@ ApplicationWindow {
             id: directionalLight
             color: Qt.rgba(1, 1, 1, 1.0)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+            castsShadow: true
         }
 
         PointLight {
@@ -275,6 +283,8 @@ ApplicationWindow {
                     specularAmount: 0.5
                 }
             ]
+            castsShadows: true
+            receivesShadows: true
         }
         //! [model triangle]
 
