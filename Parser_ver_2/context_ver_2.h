@@ -105,6 +105,7 @@ enum class CompOp{
     eq,
     no_eq
 };
+//struct NewVarVal{};
 
 struct StdContext{
     map<string,ExprResSucces> vars;

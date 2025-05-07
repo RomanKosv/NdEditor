@@ -77,7 +77,7 @@ vector<triangle> strings_to_screen_version1::triangulate(vector<Vector3f> normal
     return triangles;
 }
 
-tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(Polyhedra & figure)
+tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(Polyhedra & figure, float strong_inequality_align)
 {
     vector<Vector3f> normals;
     vector<float> distanses;
@@ -90,6 +90,7 @@ tuple<vector<Vector3f>, vector<float> > strings_to_screen_version1::imagine_3d(P
         vec.z()=linear_algebra_utilites::project(default_context.algebra,expr,default_context.space.get_one(default_context.space.z));
         normals.push_back(vec);
         distanses.push_back(-linear_algebra_utilites::project(default_context.algebra,expr,default_context.space.get_scale()));
+        distanses.back()+=hs.is_strong()?strong_inequality_align:0;
     }
     return {normals,distanses};
 }

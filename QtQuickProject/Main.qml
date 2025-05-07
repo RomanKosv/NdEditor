@@ -13,6 +13,31 @@ ApplicationWindow {
     height: 360
     visible: true
     title: "Custom Geometry Example"
+    //*
+    property url test_save_url: "file:save_file.json"
+
+    Component.onCompleted: {
+        var success=model.readJsonFile(test_save_url);
+        if(!success){
+            //some logic
+            console.log("failed to load url: "+test_save_url.toString())
+        }else{
+            for(var i=0; i<model.get_objects().length; i++){
+                object_list.append({entry: model.get_objects()[i]})
+            }
+            console.log("loaded objects, count: "+model.get_objects().length)
+        }
+    }
+
+    onClosing: {
+        var success=model.writeJsonFile(test_save_url);
+        if(!success){
+            console.log("failed to save in url: "+test_save_url.toString())
+        }else{
+            console.log("saved objects, count: "+model.get_objects().length)
+        }
+    }
+    //*/
 
     NdModel{
         id: model
@@ -30,13 +55,15 @@ ApplicationWindow {
     ListModel{
         id: object_list
     }
+
     Item{
         id: dispathcer
         property double color_indent: 20
         property double flagsPostfix : 30
+        property double delButtonPostfix : 15
         property double name_width: name_header.width
         property double scrooller_width: 15
-        property double expression_width: width - color_indent - name_width - flagsPostfix - scrooller_width
+        property double expression_width: width - color_indent - name_width - flagsPostfix - scrooller_width - delButtonPostfix
 
         width: 250
         anchors{
@@ -99,6 +126,7 @@ ApplicationWindow {
                     // Component.onCompleted: {
                     //     isNew = false
                     // }
+                    required property int index
 
                     ColorDialog{
                         id: colorSelector
@@ -175,6 +203,14 @@ ApplicationWindow {
                                 ToolTip.visible: hovered
                                 ToolTip.text: "turn on/off projection"
                         }
+                        Button {
+                            id : removeButton
+                            width : dispathcer.delButtonPostfix
+                            onClicked: {
+                                object_list.remove(listItem.index)
+                            }
+                            text: "Delete object"
+                        }
                     }
                 }
             }
@@ -201,7 +237,7 @@ ApplicationWindow {
                 bottom: parent.bottom
             }
             onClicked: {
-                for(var j = 0; j < model.get_objects().count; j++) {
+                for(var j = 0; j < model.get_objects().length; j++) {
                     console.log(model.get_objects()[j].name, model.get_objects()[j].entry)
                 }
 
@@ -248,16 +284,17 @@ ApplicationWindow {
             color: Qt.rgba(1, 1, 1, 1.0)
             ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
             castsShadow: true
+            shadowBias:0.5
         }
 
-        PointLight {
-            id: pointLight
-            position: cameraNode.position
-            color: Qt.rgba(1, 1, 1, 1)
-            ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
+        // PointLight {
+        //     id: pointLight
+        //     position: cameraNode.position
+        //     color: Qt.rgba(1, 1, 1, 1)
+        //     ambientColor: Qt.rgba(0.2, 0.2, 0.2, 1.0)
 
-        }
-        Binding{pointLight.position : cameraNode.position}
+        // }
+        // Binding{pointLight.position : cameraNode.position}
 
         //! [model triangle]
         Model {
@@ -277,10 +314,11 @@ ApplicationWindow {
                     //     id: baseColorMap
                     //     source: "qt_logo_rect.png"
                     // }
-                    // baseColor: Qt.green
+                    // baseColor: Qt.white
                     cullMode: PrincipledMaterial.NoCulling
-                    // baseColorMap: cbTexture.checked ? baseColorMap : null
+                    // baseColorMap: null
                     specularAmount: 0.5
+                    roughness: 0.259091
                 }
             ]
             castsShadows: true

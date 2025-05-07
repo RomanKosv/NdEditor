@@ -5,6 +5,7 @@
 #include <qcolor.h>
 #include <qqmlintegration.h>
 #include "strings_to_screen_version1.h"
+#include <QJsonObject>
 class ObjectEntry:public QObject
 {
     Q_OBJECT
@@ -15,6 +16,8 @@ public:
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(bool visible READ visible WRITE setVisible NOTIFY visibleChanged)
     Q_PROPERTY(bool project READ project WRITE setProject NOTIFY projectChanged)
+    Q_INVOKABLE QJsonObject toJson();
+    Q_INVOKABLE void readJson(QJsonObject);
     // std::vector<triangle> triangulate();
     ObjectEntry();
     void setName(QString s);

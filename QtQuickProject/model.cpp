@@ -4,7 +4,18 @@ Model::Model() {}
 
 void Model::add_element(ObjectEntry* entry)
 {
+    entry->setParent(this);
     objects.push_back(entry);
+}
+
+bool Model::removeAt(qsizetype index)
+{
+    bool success=false;
+    if(0<=index&&index<objects.size()){
+        objects.removeAt(index);
+        success=true;
+    }
+    return success;
 }
 
 void Model::clear()
@@ -15,6 +26,69 @@ void Model::clear()
 QVector<ObjectEntry *> Model::get_objects()
 {
     return objects;
+}
+
+QJsonArray Model::toJson()
+{
+    QJsonArray json;
+    for(auto obj : get_objects()) {
+        json.append(obj->toJson());
+    }
+    return json;
+}
+
+void Model::readJson(QJsonArray array)
+{
+    for(auto json:array){
+        if(json.isObject()){
+            ObjectEntry* entry=new ObjectEntry{};
+            entry->setParent(this);
+            entry->readJson(json.toObject());
+            add_element(entry);
+        }
+    }
+}
+
+bool Model::readJsonFile(QUrl url)
+{
+    cout<<"try load model from url "<<url.toString().toStdString()<<std::endl;
+    if(!url.isLocalFile()){
+        cout<<url.toString().toStdString()<<" not local file"<<"\n";
+    }else{
+        QFile file{url.toLocalFile()};
+        if(!file.open(QIODevice::ReadOnly)){
+            cout<<"couldnt open file "<<file.fileName().toStdString()<<std::endl;
+        }else{
+            QByteArray data=file.readAll();
+            QJsonDocument doc(QJsonDocument::fromJson(data));
+            if(!doc.isArray()){
+                cout<<"error, not a array object in json \n";
+            }else{
+                readJson(doc.array());
+                cout<<"read file successfull\n";
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Model::writeJsonFile(QUrl url)
+{
+    cout<<"try write model in url "<<url.toString().toStdString()<<std::endl;
+    if(!url.isLocalFile()){
+        cout<<url.toString().toStdString()<<" not local file"<<"\n";
+    }else{
+        QFile file{url.toLocalFile()};
+        if(!file.open(QIODevice::WriteOnly)){
+            cout<<" couldnt open file "<<file.fileName().toStdString()<<std::endl;
+        }else{
+            file.write(QJsonDocument(toJson()).toJson());
+            cout<<"write file successfull\n";
+            return true;
+        }
+    }
+    return false;
 }
 
 vector<triangle> Model::get_render(Context &context)

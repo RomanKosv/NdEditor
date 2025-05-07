@@ -34,7 +34,7 @@ public:
     strings_to_screen_version1();
     //vector<triangle> get_render(Model&,Context&);
     vector<triangle> triangulate(vector<Vector3f> normals,vector<float> distances,float epsilon = 1e-5f);
-    tuple<vector<Vector3f>,vector<float>> imagine_3d(Polyhedra&);
+    tuple<vector<Vector3f>,vector<float>> imagine_3d(Polyhedra&, float strong_inequality_align = -2e-5f);
     vector<tuple<vector<Vector3f>,vector<float>>> imagine_3d(Figure&);
     vector<Figure> search_figures(vector<Object>&);
     //vector<Object> intreprete(Model&,Context&);

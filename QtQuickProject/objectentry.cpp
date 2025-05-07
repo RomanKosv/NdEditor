@@ -5,6 +5,38 @@
 
 // }
 
+QJsonObject ObjectEntry::toJson()
+{
+    QJsonObject json;
+    json["name"] = name();
+    json["expression"] = expression();
+    json["visible"] = visible();
+    json["project"] = project();
+    json["r"] = color().redF();
+    json["g"] = color().greenF();
+    json["b"] = color().blueF();
+    json["a"] = color().alphaF();
+    return json;
+}
+
+void ObjectEntry::readJson(QJsonObject json)
+{
+    setName(json.contains("name") && json["name"].isString() ? json["name"].toString() : name());
+    setExpression(json.contains("expression") && json["expression"].isString() ? json["expression"].toString() : expression());
+    setVisible(json.contains("visible") && json["visible"].isBool() ? json["visible"].toBool() : visible());
+    setProject(json.contains("project") && json["project"].isBool() ? json["project"].toBool() : project());
+    if (json.contains("r") && json["r"].isDouble()
+        && json.contains("g") && json["g"].isDouble()
+        && json.contains("b") && json["b"].isDouble()
+        && json.contains("a") && json["a"].isDouble()){
+        setColor(QColor::fromRgbF(
+            json["r"].toDouble(),
+            json["g"].toDouble(),
+            json["b"].toDouble(),
+            json["a"].toDouble()));
+    }
+}
+
 ObjectEntry::ObjectEntry() {
     setColor(QColor::fromRgbF(1, 0, 0, 1));
 }
@@ -68,7 +100,26 @@ std::optional<Object> ObjectEntry::intreprete(Context & context)
     auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
     std::regex r(R"(\s*)");
     bool empty_name=std::regex_match(*t_name,r);//если имя не указано
-    if(!(common_parsing::isOk(p_name)||empty_name)){
+    std::regex new_var_pattern(R"(\s*\[\s*new\s*var\s*\]\s*)");
+    bool new_var_expr=std::regex_match(*t_expr, new_var_pattern);
+    if(new_var_expr){
+        if(common_parsing::isOk(p_name)){
+            auto n_name=get_node(p_name);
+            string v_name=n_name.intreprete(context);
+            if(!context.vars.contains(v_name)){
+                auto id=context.space.get_next();
+                context.dim_names[id]=v_name;
+                context.vars[v_name]=ExprResSucces{context.space.get_one(id)};
+                return EvalMaybe<ExprResSucces>{context.vars[v_name]};
+            }else{
+                cout<<"name already exist: "+*t_name<<"\n";
+                return std::nullopt;
+            }
+        }else{
+            cout<<"no name: "+*t_name<<"\n";
+            return std::nullopt;
+        }
+    }else if(!(common_parsing::isOk(p_name)||empty_name)){
         cout<<"no name: "+*t_name<<"\n";
         return std::nullopt;
     }else if(!common_parsing::isOk(p_expr)){

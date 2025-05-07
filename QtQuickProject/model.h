@@ -2,7 +2,14 @@
 #define MODEL_H
 
 #include <QObject>
+#include <QJsonArray>
+#include <QUrl>
+#include <QFile>
+#include <QIODevice>
+#include <QByteArray>
+#include <QJsonDocument>
 #include "objectentry.h"
+#include "log.h"
 
 class Model:public QObject
 {
@@ -12,8 +19,13 @@ class Model:public QObject
 public:
     Model();
     Q_INVOKABLE void add_element(ObjectEntry*);
+    Q_INVOKABLE bool removeAt(qsizetype index);
     Q_INVOKABLE void clear();
     Q_INVOKABLE QVector<ObjectEntry*> get_objects();
+    Q_INVOKABLE QJsonArray toJson();
+    Q_INVOKABLE void readJson(QJsonArray array);
+    Q_INVOKABLE bool readJsonFile(QUrl url);
+    Q_INVOKABLE bool writeJsonFile(QUrl url);
     vector<triangle> get_render(Context& context);
 };
 
