@@ -10,7 +10,9 @@ add_library(Parser_ver_2
     context_ver_2.h context_ver_2.cpp
     parse_errors_ver_2.h
     parse_errors_ver_2.cpp
-    some_more_parsing_utilites.h)
+    some_more_parsing_utilites.h
+    transformation_support.h
+    transformation_support.cpp)
 
 target_include_directories(Parser_ver_2 PUBLIC .)
 

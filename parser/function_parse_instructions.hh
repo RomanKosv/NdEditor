@@ -38,7 +38,7 @@ struct FunCallParseInstruction{
         if(brackets_fail->size()!=0){
             return brackets_fail->back();
         }else{
-            return compress_parse_vector(*arg_succes,target,(*brackets_success)[0].end,(*brackets_success)[1].start);
+            return compress_parse_vector(*arg_succes,target,(*brackets_success)[0].start,(*brackets_success)[1].end);
         }
     }
     Parse<vector<Arg>,Context,TerminalNoParseInfo> get_parse_args_part()const{

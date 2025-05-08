@@ -10,6 +10,7 @@
 #include "linear_algebra/linear_algebra.h"
 #include "linear_algebra/linear_algebra_utilites.h"
 #include "array_utilites.h"
+#include "nd_geometry/transformation.h"
 #include "nd_geometry/group_geom_sys.h"
 #include "parser/wrappers.hh"
 #include <string>
@@ -27,6 +28,7 @@ using nd_parser_realisation_1::StdSpaceFactory;
 using common_parsing::Maybe;
 using nd_geometry::LinearAlgebra;
 using nd_parser_realisation_1::GroupGeomSys;
+using nd_geometry::FirstTransformationRealisation;
 
 namespace concrete_parsing_ver_2{
 static Log context_log{true,"[std_context_log]"};

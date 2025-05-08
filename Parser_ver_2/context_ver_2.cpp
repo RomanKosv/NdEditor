@@ -213,10 +213,10 @@ EvalMaybe<Figure> StdContext::eval_or_op(vector<EvalMaybe<Figure> > args, vector
 }
 
 EvalMaybe<ExprResSucces> StdContext::get_common_var(string name){
-    if(vars.contains(name)&&is_match_type(vars[name],EvalTypes::numexpr)){
+    if(vars.contains(name)){
         return EvalMaybe<ExprResSucces>{vars[name]};
     }else{
-        return EvalMaybe<ExprResSucces>{EvalError{"cant find num var "+name}};
+        return EvalMaybe<ExprResSucces>{EvalError{"cant find common var "+name}};
     }
 }
 

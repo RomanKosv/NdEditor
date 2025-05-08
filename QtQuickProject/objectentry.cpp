@@ -98,11 +98,26 @@ std::optional<Object> ObjectEntry::intreprete(Context & context)
     Text t_expr=make_shared<string>(data.toStdString());
     auto p_name=to_end(concrete_parsing_ver_2::p_name(t_name,0));
     auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
+    auto p_transform=to_end(concrete_parsing_ver_2::p_transform(t_expr,0));
     std::regex r(R"(\s*)");
     bool empty_name=std::regex_match(*t_name,r);//если имя не указано
     std::regex new_var_pattern(R"(\s*\[\s*new\s*var\s*\]\s*)");
     bool new_var_expr=std::regex_match(*t_expr, new_var_pattern);
-    if(new_var_expr){
+    if(isOk(p_transform)&&(isOk(p_name)||empty_name)){
+        auto v_transform=get_node(p_transform).intreprete(context);
+        if(v_transform.isOk()){
+            if(isOk(p_name)){
+                auto v_name=get_node(p_name).intreprete(context);
+                context.funs[v_name]=concrete_parsing_ver_2::EvalFun{v_transform.getOk()};
+                cout<<"set transform to name "<<t_name<<"\n";
+            }
+            cout<<"ok intreprete transform "<<t_expr<<"\n";
+            return nullopt;
+        }else{
+            cout<<"err intreprete transform "<<t_expr<<"\n";
+            return nullopt;
+        }
+    }else if(new_var_expr){
         if(common_parsing::isOk(p_name)){
             auto n_name=get_node(p_name);
             string v_name=n_name.intreprete(context);

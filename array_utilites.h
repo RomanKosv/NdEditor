@@ -12,7 +12,7 @@ vector<T> concatenate(vector<T> a,vector<T> b){
     return res;
 }
 template<typename A, typename B>
-vector<B> do_map(vector<A> source, std::function<B(A)> fun){
+vector<B> do_map(const vector<A> source, std::function<B(A)> fun){
     vector<B> res;
     for(A it:source){
         res.push_back(fun(it));

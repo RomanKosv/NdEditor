@@ -1,6 +1,6 @@
 #include "strings_to_screen_version1.h"
 
-float strings_to_screen_version1::out_box_distance = 10;
+float strings_to_screen_version1::out_box_distance = 3;
 vector<Vector3f> strings_to_screen_version1::out_box_normals{
     {1, 0, 0},
     {-1, 0, 0},
