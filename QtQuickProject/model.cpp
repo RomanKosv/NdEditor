@@ -39,6 +39,7 @@ QJsonArray Model::toJson()
 
 void Model::readJson(QJsonArray array)
 {
+    clear();
     for(auto json:array){
         if(json.isObject()){
             ObjectEntry* entry=new ObjectEntry{};

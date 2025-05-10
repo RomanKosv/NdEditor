@@ -35,6 +35,7 @@ qt_add_qml_module(appQtQuickProject
         SOURCES strings_to_screen_version1.h strings_to_screen_version1.cpp
         RESOURCES test_ndeditor_expressions
         SOURCES log.h
+        QML_FILES SaveDialog.qml
 # >>>>>>> origin/loggerr
 )
 

@@ -31,7 +31,7 @@ using nd_parser_realisation_1::GroupGeomSys;
 using nd_geometry::FirstTransformationRealisation;
 
 namespace concrete_parsing_ver_2{
-static Log context_log{true,"[std_context_log]"};
+static Log context_log{false,"[std_context_log]"};
 struct StdContext;
 typedef double Scalar;
 typedef SparseVector<Scalar> NumExpr;
@@ -109,6 +109,8 @@ enum class CompOp{
 };
 //struct NewVarVal{};
 
+typedef FirstTransformationRealisation<NumExpr,Scalar> Transform;
+
 struct StdContext{
     map<string,ExprResSucces> vars;
     map<string,EvalFun> funs;
@@ -122,7 +124,10 @@ struct StdContext{
     LinearAlgebra<NumExpr,Scalar> algebra;
     GroupGeomSys<Scalar,NumExpr> gs;
     StdContext();
+    void initalize_vars_and_functions();
     bool is_scalar(NumExpr expr);
+    bool is_zero(NumExpr expr);
+    bool is_vector(NumExpr expr);
     bool is_match_type(ExprResSucces val, EvalTypes type);
     Maybe<Scalar> get_scalar(NumExpr expr);
     string get_dim_name(size_t id);;
@@ -162,6 +167,12 @@ struct StdContext{
     string to_str(nd_geometry::Polyhedron<NumExpr> p);
     string to_str(Figure g);
     string to_str(ExprResSucces res);
+    EvalMaybe<Figure> move_figure(Figure figure, NumExpr dim, Scalar distance);
+    EvalMaybe<Figure> move_figure(EvalMaybe<ExprResSucces> figure, EvalMaybe<ExprResSucces> dim, EvalMaybe<ExprResSucces> distance);
+    EvalMaybe<Figure> move_figure(std::vector<EvalMaybe<ExprResSucces>> args);
+    Transform get_empty_transform();
+    Transform get_transform_with_static_scale();
+    Transform get_full_transform_static_scale();
 };
 }
 #endif // CONTEXT_VER_2_H

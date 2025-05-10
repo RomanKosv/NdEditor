@@ -22,6 +22,7 @@ tuple<StdContext, Transform> make_transform_all_context(StdContext c)
         string str=pair.second+"'";
         mp[id]=str;
     }
+    t.pairs.push_back(Transform::DimPair{c.space.get_scale(),c.space.get_scale()});
     c.dim_names=mp;
     EvalFun transform_num{NumFun{[t](vector<EvalMaybe<ExprResSucces>> args,StdContext c){
         if(args.size()!=1) return EvalMaybe<NumExpr>{EvalError{"need 1 arg"}};

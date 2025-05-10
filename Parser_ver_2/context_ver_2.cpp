@@ -43,12 +43,6 @@ StdContext::StdContext(){
     };
     algebra.mult=mult;
     algebra.add=add;
-    vars["x"]=ExprResSucces{space.get_one(space.x)};
-    vars["y"]=ExprResSucces{space.get_one(space.y)};
-    vars["z"]=ExprResSucces{space.get_one(space.z)};
-    dim_names[space.x]="x";
-    dim_names[space.y]="y";
-    dim_names[space.z]="z";
     gs.algebra=algebra;
     gs.obj_factory=nd_geometry::wrap_factory<NumExpr>();
     gs.order=linear_algebra_utilites::make_order<Scalar>();
@@ -57,12 +51,39 @@ StdContext::StdContext(){
     gs.polyhedron_gs->algebra=gs.algebra;
     gs.polyhedron_gs->obj_factory=gs.obj_factory;
     gs.polyhedron_gs->order=gs.order;
+    initalize_vars_and_functions();
 }
+
+void StdContext::initalize_vars_and_functions(){
+    vars["x"]=ExprResSucces{space.get_one(space.x)};
+    vars["y"]=ExprResSucces{space.get_one(space.y)};
+    vars["z"]=ExprResSucces{space.get_one(space.z)};
+    dim_names[space.x]="x";
+    dim_names[space.y]="y";
+    dim_names[space.z]="z";
+    funs["move"]=EvalFun{
+        BoolFun{
+            [](vector<EvalMaybe<ExprResSucces>> args, StdContext c){
+                return c.move_figure(args);
+            }
+        }
+    };
+};
 
 bool StdContext::is_scalar(NumExpr expr){
     NumExpr perpendicular=linear_algebra_utilites::perpendicular_component(
         algebra,expr,space.get_one(space.scale));
     return linear_algebra_utilites::is_zero(algebra,perpendicular);
+}
+
+bool StdContext::is_zero(NumExpr expr)
+{
+    return algebra.like_dot_product(expr,expr)==0;
+}
+
+bool StdContext::is_vector(NumExpr expr)
+{
+    return algebra.like_dot_product(expr,space.get_scale())==0;
 }
 
 bool StdContext::is_match_type(ExprResSucces val, EvalTypes type){
@@ -375,6 +396,88 @@ string StdContext::to_str(ExprResSucces res){
     }else{
         return to_str(res.get_num());
     }
+}
+
+EvalMaybe<Figure> StdContext::move_figure(Figure figure, NumExpr dim, Scalar distance)
+{
+    if(is_zero(dim)){
+        return EvalMaybe<Figure>{EvalError{"dim [arg 2] is zero in function move"}};
+    }else if(!is_vector(dim)){
+        return EvalMaybe<Figure>{EvalError{"dim [arg 2] is not vector in function move"}};
+    }else{
+        Transform t=get_empty_transform();
+        auto id=space.get_next();
+        auto new_dim=space.get_one(id);
+        t.pairs.push_back(Transform::DimPair{dim,new_dim});
+        EvalMaybe<Figure> cond=comp(
+            EvalMaybe<NumExpr>{new_dim},
+            EvalMaybe<NumExpr>{dim+space.get_scale()*distance},
+            CompOp::eq);
+        Figure res=t.transform_accurate(figure,cond.getOk());
+        return EvalMaybe<Figure>{res};
+    }
+}
+
+EvalMaybe<Figure> StdContext::move_figure(EvalMaybe<ExprResSucces> figure, EvalMaybe<ExprResSucces> dim, EvalMaybe<ExprResSucces> distance)
+{
+    if(!figure.isOk()){
+        return EvalMaybe<Figure>{figure.getErr()};
+    }else if(!figure.getOk().is_logic()){
+        return EvalMaybe<Figure>{EvalError{"figure [1 arg] is not figure in move()"}};
+    }else if(!dim.isOk()){
+        return EvalMaybe<Figure>{dim.getErr()};
+    }else if(!dim.getOk().is_num()){
+        return EvalMaybe<Figure>{EvalError{"dim [2 arg] is not numexpr in move()"}};
+    }else if(!distance.isOk()){
+        return EvalMaybe<Figure>{distance.getErr()};
+    }else if(!distance.getOk().is_num()||!is_scalar(distance.getOk().get_num())){
+        return EvalMaybe<Figure>{EvalError{"distance [3 arg] is not scalar in move()"}};
+    }else{
+        return move_figure(
+            figure.getOk().get_figure(),
+            dim.getOk().get_num(),
+            get_scalar(distance.getOk().get_num()).get_ok());
+    }
+}
+
+EvalMaybe<Figure> StdContext::move_figure(std::vector<EvalMaybe<ExprResSucces> > args)
+{
+    if(args.size()!=3){
+        return EvalMaybe<Figure>{EvalError{"move() need 3 args, recieve"+to_string(args.size())}};
+    }else{
+        return move_figure(args[0],args[1],args[2]);
+    }
+}
+
+Transform StdContext::get_empty_transform()
+{
+    return Transform{
+        shared_ptr<GeometrySystem<NumExpr,Figure>>{
+                new GroupGeomSys<Scalar,NumExpr>{gs}},
+        algebra,
+        gs.obj_factory,
+        {}
+    };
+}
+
+Transform StdContext::get_transform_with_static_scale()
+{
+    auto t=get_empty_transform();
+    t.pairs.push_back(Transform::DimPair{space.get_scale(),space.get_scale()});
+    return t;
+}
+
+Transform StdContext::get_full_transform_static_scale()
+{
+    auto t=get_transform_with_static_scale();
+    map<std::size_t,string> mp=dim_names;
+    for(auto pair:dim_names){
+        auto id=space.get_next();
+        t.pairs.push_back(Transform::DimPair{space.get_one(pair.first),space.get_one(id)});
+        string str=pair.second+"'";
+        mp[id]=str;
+    }
+    return t;
 }
 
 }

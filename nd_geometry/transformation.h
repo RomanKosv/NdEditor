@@ -52,8 +52,8 @@ struct FirstTransformationRealisation{
     }
     Group<Expr> transform_accurate(Group<Expr> figure, Group<Expr> transformation_conditions) const{
         Group<Expr> dependence=gs->intersect_of(figure,transformation_conditions);
-        std::vector<Expr> previous_space=array_utilites::do_map(pairs,[](DimPair p){return p.previous;});
-        Group<Expr> projection=figure;
+        std::vector<Expr> previous_space=array_utilites::do_map<DimPair,Expr>(pairs,[](DimPair p){return p.previous;});
+        Group<Expr> projection=dependence;
         for(auto& i:previous_space){
             projection=gs->project_parallel(projection,i);
         }
