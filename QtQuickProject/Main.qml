@@ -153,15 +153,14 @@ ApplicationWindow {
         Button{
             id: saveButton
             text: "Save"
-            SaveDialog{
+            Dialog{
                 id: saveFailDialog
-                function saveFun(file) {
-                    return saveModel(file)
-                }
-                saveURL: ""
-                canDisard: false
                 anchors.centerIn: Overlay.overlay
-                header: Text{text: "Cant save to file. Choose another?"}
+                header: Text{text: "Cant save to "+(""+save_url).replace(/^file:\/*/, "")+"\nChoose another?"}
+                standardButtons: Dialog.Ok | Dialog.Cancel
+                onAccepted: {
+                    saveAsDialog.open()
+                }
             }
             onClicked: {
                 if(!saveModel(save_url)) {
@@ -174,16 +173,26 @@ ApplicationWindow {
             id: saveAsButton
             text: "Save as"
 
-            SaveDialog{
+            FileDialog{
                 id: saveAsDialog
-                function saveFun(file) {
-                    return saveModel(file)
+                fileMode: FileDialog.SaveFile
+                defaultSuffix: "json"
+                onAccepted: {
+                    if (!saveModel(selectedFile)) {
+                        saveAsFail.open()
+                    }
                 }
-                saveURL: ""
-                canDisard: false
-                anchors.centerIn: Overlay.overlay
-                header: Text{text: "Save as?"}
             }
+            Dialog{
+                id: saveAsFail
+                standardButtons: Dialog.Ok | Dialog.Cancel
+                header: Text{text: "Cant save to selected file"}
+                anchors.centerIn: Overlay.overlay
+                onAccepted: {
+                    saveAsDialog.open()
+                }
+            }
+
             onClicked: {
                 saveAsDialog.open()
             }
