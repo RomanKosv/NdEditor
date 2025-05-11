@@ -123,6 +123,7 @@ ApplicationWindow {
                         }
                         save_url = selectedFile
                         need_save = false
+                        geometry.setModel(model)
                     }
                     else{
                         openFail.open()
