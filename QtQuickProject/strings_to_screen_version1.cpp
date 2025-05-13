@@ -1,6 +1,6 @@
 #include "strings_to_screen_version1.h"
 
-float strings_to_screen_version1::out_box_distance = 3;
+// float strings_to_screen_version1::out_box_distance = 10;
 vector<Vector3f> strings_to_screen_version1::out_box_normals{
     {1, 0, 0},
     {-1, 0, 0},
@@ -11,13 +11,13 @@ vector<Vector3f> strings_to_screen_version1::out_box_normals{
 };
 
 strings_to_screen_version1::strings_to_screen_version1() {
-    string dims="wabc";
-    for(char c:dims){
-        auto id=default_context.space.get_next();
-        auto one=default_context.space.get_one(id);
-        default_context.vars[string{c}]=ExprResSucces{one};
-        default_context.dim_names[id]=string{c};
-    }
+    // string dims="wabc";
+    // for(char c:dims){
+    //     auto id=default_context.space.get_next();
+    //     auto one=default_context.space.get_one(id);
+    //     default_context.vars[string{c}]=ExprResSucces{one};
+    //     default_context.dim_names[id]=string{c};
+    // }
 }
 /*
 vector<triangle> strings_to_screen_version1::get_render(Model & m, Context & c)

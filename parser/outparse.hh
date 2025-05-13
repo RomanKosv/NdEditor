@@ -14,7 +14,7 @@
 #include "debug.hh"
 #include "function_parse_architect.hh"
 namespace common_parsing{
-static Log OUTPARSE_LOGGER{true,"[OUTPARSE_LOGGER]"};
+static Log OUTPARSE_LOGGER{false,"[OUTPARSE_LOGGER]"};
 template<typename T>
 using ptr=shared_ptr<T>;
 template<typename Res, typename Context, typename NoParseInfo>

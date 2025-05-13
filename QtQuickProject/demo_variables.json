@@ -1,0 +1,102 @@
+[
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "использовать объект перед объявлением нельзя",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x+w<=0",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "объявление новой переменной w",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[new var]",
+        "g": 0.501960813999176,
+        "name": "w",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "использование переменной. мы задаем условие относительно w",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "w=1",
+        "g": 0.501960813999176,
+        "name": "bounds",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Выражение, задающее квадрат в трехмерном пространстве с центром в 0 и стороной 2w.",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x<=w&x>=-w&y<=w&y>=-w&z<=w&z>=-w",
+        "g": 0.501960813999176,
+        "name": "square",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "мы применяем к square условие bounds. Обратите внимание, что значек проекции переключон на true. При отображении среза все свободные переменные кроме xyz будут считаться равными нулю. То есть квадрат выродится в точку.",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "square&bounds",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": true,
+        "r": 0,
+        "visible": true
+    }
+]

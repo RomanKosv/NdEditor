@@ -59,8 +59,20 @@ void TriangleGeometry::setModel(Model* m)
 {
     //обработать полиэдры и подать в triangles
     strings_to_screen_version1 pipeline;
+    pipeline.out_box_distance = boxDist();
     auto c=pipeline.get_standart_context();
-    triangles=m->get_render(c);
+    triangles=m->get_render(pipeline, c);
     updateData();
     update();
+}
+
+void TriangleGeometry::setBoxDist(float dist)
+{
+    _boxDist = dist;
+    emit boxDistChanged(dist);
+}
+
+float TriangleGeometry::boxDist()
+{
+    return _boxDist;
 }

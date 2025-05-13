@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.16)
 
 project(NdEditor LANGUAGES CXX)
 
+if(MINGW)
+    add_compile_options(-Wa,-mbig-obj)
+endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -48,9 +54,9 @@ install(TARGETS NdEditorLib
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-add_subdirectory(testWindow)
+# add_subdirectory(testWindow)
 add_subdirectory(QtQuickProject)
-add_subdirectory(logger)
+# add_subdirectory(logger)
 add_subdirectory(triangulation)
-add_subdirectory(TestIntearface)
+# add_subdirectory(TestIntearface)
 add_subdirectory(Parser_ver_2)

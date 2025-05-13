@@ -13,7 +13,7 @@ add_library(triangulation
     optimized_eigein_triangulation.h
     triangulation_with_eigen_1.cpp)
 target_include_directories(triangulation PUBLIC .)
-target_link_libraries (triangulation Eigen3::Eigen logger)
+target_link_libraries (triangulation Eigen3::Eigen #[[logger]])
 include(GNUInstallDirs)
 install(TARGETS triangulation
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

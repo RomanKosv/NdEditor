@@ -92,10 +92,9 @@ bool Model::writeJsonFile(QUrl url)
     return false;
 }
 
-vector<triangle> Model::get_render(Context &context)
+vector<triangle> Model::get_render(strings_to_screen_version1 pipeline, Context &context)
 {
     vector<triangle> triangles;
-    strings_to_screen_version1 pipeline;
     for(ObjectEntry *entry : this->get_objects()) {
         auto intreprete_rez = entry->get_render_figure(context);
         if (intreprete_rez.has_value()){

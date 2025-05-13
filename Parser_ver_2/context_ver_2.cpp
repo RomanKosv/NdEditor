@@ -407,11 +407,12 @@ EvalMaybe<Figure> StdContext::move_figure(Figure figure, NumExpr dim, Scalar dis
     }else{
         Transform t=get_empty_transform();
         auto id=space.get_next();
+        auto norm=dim/dim.norm();
         auto new_dim=space.get_one(id);
-        t.pairs.push_back(Transform::DimPair{dim,new_dim});
+        t.pairs.push_back(Transform::DimPair{norm,new_dim});
         EvalMaybe<Figure> cond=comp(
             EvalMaybe<NumExpr>{new_dim},
-            EvalMaybe<NumExpr>{dim+space.get_scale()*distance},
+            EvalMaybe<NumExpr>{norm+space.get_scale()*distance},
             CompOp::eq);
         Figure res=t.transform_accurate(figure,cond.getOk());
         return EvalMaybe<Figure>{res};

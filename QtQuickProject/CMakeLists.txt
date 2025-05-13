@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
 project(QtQuickProject VERSION 0.1 LANGUAGES CXX)
 
@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 REQUIRED COMPONENTS
     Quick
     Quick3D
+    Qml
 )
 # >>>>>>> origin/logger
 
@@ -36,6 +37,7 @@ qt_add_qml_module(appQtQuickProject
         RESOURCES test_ndeditor_expressions
         SOURCES log.h
         QML_FILES SaveDialog.qml
+        QML_FILES demo_variables.json
 # >>>>>>> origin/loggerr
 )
 
@@ -62,7 +64,8 @@ target_link_libraries(appQtQuickProject
         triangulation
         Qt6::Quick
         Qt6::Quick3D
-        logger
+        Qt6::Qml
+        # logger
 # >>>>>>> origin/logger
 )
 
@@ -72,3 +75,9 @@ install(TARGETS appQtQuickProject
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# qt6_generate_deploy_qml_app_script(
+#     TARGET appQtQuickProject
+#     OUTPUT_SCRIPT deploy_script
+# )
+# install(SCRIPT ${deploy_script})

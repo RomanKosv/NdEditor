@@ -6,6 +6,7 @@ import QtQuick3D
 import QtQuick3D.Helpers
 import QtQuickProject
 import QtQuick.Dialogs
+import QtQml
 
 ApplicationWindow {
     id: window
@@ -16,11 +17,16 @@ ApplicationWindow {
     //*
     property url test_save_url: "file:save_file.json"
 
-    property url save_url: ""
+    property url save_url: "demo.json"
 
     property bool need_save: false
 
     function saveModel(file) {
+        model.clear()
+        for(var i = 0; i < object_list.count; i++){
+            model.add_element(object_list.get(i).entry)
+            console.log(object_list.get(i).entry.name, object_list.get(i).entry.expression)
+        }
         var succes= model.writeJsonFile(file)
         if (succes) {
             need_save = false
@@ -152,6 +158,36 @@ ApplicationWindow {
             }
         }
         Button{
+            id: newButton
+            text: "New"
+            SaveDialog{
+                id: saveBeforeNew
+                saveURL: save_url
+                function saveFun(file) {
+                    return saveModel(file)
+                }
+                canDisard: true
+                onAccepted: {
+                    object_list.clear()
+                    model.clear()
+                    save_url = ""
+                    need_save = false
+                }
+            }
+            onClicked: {
+                if (need_save) {
+                    saveBeforeNew.open()
+                }
+                else{
+                    object_list.clear()
+                    model.clear()
+                    save_url = ""
+                    need_save = false
+                }
+            }
+        }
+
+        Button{
             id: saveButton
             text: "Save"
             Dialog{
@@ -169,7 +205,6 @@ ApplicationWindow {
                 }
             }
         }
-
         Button{
             id: saveAsButton
             text: "Save as"
@@ -197,6 +232,39 @@ ApplicationWindow {
             onClicked: {
                 saveAsDialog.open()
             }
+        }
+        Slider{
+            id: boxDistanceSlider
+            from: 1
+            to: 1000
+            value: geometry.boxDist
+            Binding{boxDistanceSlider.value: geometry.boxDist}
+            onValueChanged: {
+                if (geometry.boxDist !== value) {
+                    geometry.boxDist = value;
+                }
+            }
+            ToolTip.visible: hovered
+            ToolTip.text: "Bounding box size"
+        }
+        TextField{
+            id: boxDistText
+            text: geometry.boxDist
+            onEditingFinished: {
+                if (parseInt(text, 10) != NaN) {
+                    geometry.boxDist = parseInt(text, 10)
+                }
+                else{
+                    text = geometry.boxDist
+                }
+            }
+            Binding{
+                boxDistText.text: geometry.boxDist
+                when: !boxDistText.activeFocus
+            }
+            width: 70
+            ToolTip.visible: hovered
+            ToolTip.text: "Bounding box size"
         }
     }
 
@@ -340,6 +408,9 @@ ApplicationWindow {
                                     entry.expression = text
                                     need_save = true
                                 }
+                                background: Rectangle{
+                                    color: entry.isError? Qt.color("red") : Qt.color("white")
+                                }
                             }
                             CheckBox {
                                 id: is_visible_check_box
@@ -442,6 +513,7 @@ ApplicationWindow {
                 PerspectiveCamera {
                     id: cameraNode
                     z: 600
+                    clipFar: Math.min(Math.max(1000, geometry.boxDist*2), 10000)
                 }
                 position: Qt.vector3d(0, 0, 0)
                 // rotation: Qt.quaternion(1, 0, 0, 0)

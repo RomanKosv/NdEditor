@@ -26,7 +26,7 @@ public:
     Q_INVOKABLE void readJson(QJsonArray array);
     Q_INVOKABLE bool readJsonFile(QUrl url);
     Q_INVOKABLE bool writeJsonFile(QUrl url);
-    vector<triangle> get_render(Context& context);
+    vector<triangle> get_render(strings_to_screen_version1 pipeline, Context &context);
 };
 
 #endif // MODEL_H

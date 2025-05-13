@@ -20,6 +20,7 @@ class TriangleGeometry : public QQuick3DGeometry
 public:
     TriangleGeometry();
     Q_INVOKABLE void setModel(Model*);
+    Q_PROPERTY(float boxDist READ boxDist WRITE setBoxDist NOTIFY boxDistChanged FINAL);
 
     // bool normals() const { return m_hasNormals; }
     // void setNormals(bool enable);
@@ -38,6 +39,10 @@ public:
     //     void normalXYChanged();
     //     void uvChanged();
     //     void uvAdjustChanged();
+    void setBoxDist(float);
+    float boxDist();
+signals:
+    void boxDistChanged(float);
 
 private:
     void updateData();
@@ -49,6 +54,7 @@ private:
             {0.0f, 1.0f, 0.0f}
         }
     };
+    float _boxDist = 50;
     // bool m_hasNormals = false;
     // float m_normalXY = 0.0f;
     // bool m_hasUV = false;
