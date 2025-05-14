@@ -398,6 +398,24 @@ string StdContext::to_str(ExprResSucces res){
     }
 }
 
+string StdContext::to_str(EvalTypes type)
+{
+    switch (type) {
+    case concrete_parsing_ver_2::EvalTypes::figure:
+        return "fugure";
+        break;
+    case concrete_parsing_ver_2::EvalTypes::numexpr:
+        return "numexpr";
+        break;
+    case concrete_parsing_ver_2::EvalTypes::scalar:
+        return "scalar";
+        break;
+    default:
+        throw "oops";
+        break;
+    }
+}
+
 EvalMaybe<Figure> StdContext::move_figure(Figure figure, NumExpr dim, Scalar distance)
 {
     if(is_zero(dim)){
@@ -479,6 +497,54 @@ Transform StdContext::get_full_transform_static_scale()
         mp[id]=str;
     }
     return t;
+}
+
+optional<EvalError> StdContext::check_match_types(vector<EvalMaybe<ExprResSucces>> &args, vector<EvalTypes> types, string funname)
+{
+    auto no_ok=EvalMaybe<ExprResSucces>::get_first_no_ok(args);
+    if(!no_ok.isEmpty()){
+        return no_ok.get_ok();
+    }else{
+        string pref="Error in fun "+funname+" : ";
+        if(args.size()!=types.size()){
+            return EvalError{pref+"need "+to_string(types.size())+" recieve "+to_string(args.size())};
+        }else{
+            for(int i=0;i<args.size();i++){
+                if(!is_match_type(args[i].getOk(),types[i])){
+                    return EvalError{pref+"arg "+to_string(i+1)+" excepted "+to_str(types[i])};
+                }
+            }
+            return nullopt;
+        }
+    }
+}
+
+EvalMaybe<ExprResSucces> StdContext::rotate_figure(vector<EvalMaybe<ExprResSucces> > &args)
+{
+    optional<EvalError> err_types=check_match_types(args,{EvalTypes::figure,EvalTypes::numexpr,EvalTypes::numexpr,EvalTypes::scalar}, "rotate()");
+    if(err_types.has_value()){
+        return EvalMaybe<ExprResSucces>{err_types.value()};
+    }else{
+        auto figure=args[0].getOk().get_figure();
+        auto dim1=args[1].getOk().get_num();
+        auto dim2=args[2].getOk().get_num();
+        auto angle=get_scalar(args[3].getOk().get_num()).get_ok();
+        Eigen::Rotation2D<Scalar> rot(angle);
+        auto t=get_empty_transform();
+        auto id1=space.get_next();
+        auto new_dim1=space.get_one(id1);
+        auto id2=space.get_next();
+        auto new_dim2=space.get_one(id2);
+        t.pairs.push_back(Transform::DimPair{new_dim1,dim1*rot.matrix()(0,0)+dim2*rot.matrix()(0,1)});
+        t.pairs.push_back(Transform::DimPair{new_dim2,dim1*rot.matrix()(1,0)+dim2*rot.matrix()(1,1)});
+        if(is_zero(dim1)){
+            return EvalMaybe<ExprResSucces>{EvalError{"rotate() arg 2 is zero"}};
+        }else if(is_zero(dim2)){
+            return EvalMaybe<ExprResSucces>{EvalError{"rotate() arg 3 is zero"}};
+        }else{
+            return EvalMaybe<ExprResSucces>{ExprResSucces{t.transform_accurate(figure,gs.obj_factory.make_group({}))}};
+        }
+    }
 }
 
 }

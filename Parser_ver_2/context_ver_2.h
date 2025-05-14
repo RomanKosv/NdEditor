@@ -17,6 +17,7 @@
 #include <map>
 #include <functional>
 #include <variant>
+#include <Eigen/Geometry>
 using std::map;
 using std::string;
 using std::function;
@@ -167,12 +168,15 @@ struct StdContext{
     string to_str(nd_geometry::Polyhedron<NumExpr> p);
     string to_str(Figure g);
     string to_str(ExprResSucces res);
+    string to_str(EvalTypes type);
     EvalMaybe<Figure> move_figure(Figure figure, NumExpr dim, Scalar distance);
     EvalMaybe<Figure> move_figure(EvalMaybe<ExprResSucces> figure, EvalMaybe<ExprResSucces> dim, EvalMaybe<ExprResSucces> distance);
     EvalMaybe<Figure> move_figure(std::vector<EvalMaybe<ExprResSucces>> args);
     Transform get_empty_transform();
     Transform get_transform_with_static_scale();
     Transform get_full_transform_static_scale();
+    optional<EvalError> check_match_types(vector<EvalMaybe<ExprResSucces>> & args, vector<EvalTypes> types, string funname);
+    EvalMaybe<ExprResSucces> rotate_figure(vector<EvalMaybe<ExprResSucces>> & args);
 };
 }
 #endif // CONTEXT_VER_2_H
