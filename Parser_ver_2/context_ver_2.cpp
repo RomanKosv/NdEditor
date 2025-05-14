@@ -531,18 +531,17 @@ EvalMaybe<ExprResSucces> StdContext::rotate_figure(vector<EvalMaybe<ExprResSucce
         auto angle=get_scalar(args[3].getOk().get_num()).get_ok();
         Eigen::Rotation2D<Scalar> rot(angle);
         auto t=get_empty_transform();
-        auto id1=space.get_next();
-        auto new_dim1=space.get_one(id1);
-        auto id2=space.get_next();
-        auto new_dim2=space.get_one(id2);
-        t.pairs.push_back(Transform::DimPair{new_dim1,dim1*rot.matrix()(0,0)+dim2*rot.matrix()(0,1)});
-        t.pairs.push_back(Transform::DimPair{new_dim2,dim1*rot.matrix()(1,0)+dim2*rot.matrix()(1,1)});
         if(is_zero(dim1)){
             return EvalMaybe<ExprResSucces>{EvalError{"rotate() arg 2 is zero"}};
         }else if(is_zero(dim2)){
             return EvalMaybe<ExprResSucces>{EvalError{"rotate() arg 3 is zero"}};
         }else{
-            return EvalMaybe<ExprResSucces>{ExprResSucces{t.transform_accurate(figure,gs.obj_factory.make_group({}))}};
+            dim2=linear_algebra_utilites::perpendicular_component(algebra,dim2,dim1);
+            dim1=dim1/dim1.norm();
+            dim2=dim2/dim2.norm();
+            t.pairs.push_back(Transform::DimPair{dim1,dim1*rot.matrix()(0,0)+dim2*rot.matrix()(0,1)});
+            t.pairs.push_back(Transform::DimPair{dim2,dim1*rot.matrix()(1,0)+dim2*rot.matrix()(1,1)});
+            return EvalMaybe<ExprResSucces>{ExprResSucces{t.set_dim(t.pairs,figure)}};
         }
     }
 }
