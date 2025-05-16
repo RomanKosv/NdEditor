@@ -38,6 +38,9 @@ qt_add_qml_module(appQtQuickProject
         SOURCES log.h
         QML_FILES SaveDialog.qml
         QML_FILES demo_variables.json
+        SOURCES chmhelp.h chmhelp.cpp
+        RESOURCES help.chm
+        QML_FILES demo.json
 # >>>>>>> origin/loggerr
 )
 

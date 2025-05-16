@@ -17,9 +17,21 @@ ApplicationWindow {
     //*
     property url test_save_url: "file:save_file.json"
 
-    property url save_url: "demo.json"
+    property url save_url: "file:demo.json"
 
     property bool need_save: false
+    Shortcut{
+        sequence: "F1"
+        onActivated: {
+            console.log("try open chm")
+            chmHelp.open()
+        }
+    }
+
+    ChmHelp{
+        id: chmHelp
+        file: Qt.resolvedUrl("file:help.chm")
+    }
 
     function saveModel(file) {
         model.clear()
