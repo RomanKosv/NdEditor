@@ -296,7 +296,8 @@ ApplicationWindow {
             property double delButtonPostfix : 15
             property double name_width: name_header.width
             property double scrooller_width: 15
-            property double expression_width: width - color_indent - name_width - flagsPostfix - scrooller_width - delButtonPostfix
+            property double rezButtonWidth : 20
+            property double expression_width: width - color_indent - name_width - flagsPostfix - scrooller_width - delButtonPostfix - rezButtonWidth
 
             SplitView.preferredWidth: 250
 
@@ -456,6 +457,31 @@ ApplicationWindow {
                                     need_save = true
                                 }
                                 text: "Delete object"
+                            }
+                            Button{
+                                id: openRezultButton
+                                width : dispathcer.rezButtonWidth
+                                text: ">>"
+                                height: 10
+                                Dialog{
+                                    id: rezultWindow
+                                    standardButtons: Dialog.Cancel
+                                    width: window.width*2/3
+                                    height: window.height*2/3
+                                    anchors.centerIn: Overlay.overlay
+                                    contentItem: ScrollView{
+
+                                        TextArea{
+                                            width: rezultWindow.width
+                                            text: entry.result
+                                            wrapMode: TextEdit.Wrap
+                                            readOnly: true
+                                        }
+                                    }
+                                }
+                                onClicked: {
+                                    rezultWindow.open()
+                                }
                             }
                         }
                     }

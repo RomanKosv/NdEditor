@@ -8,6 +8,7 @@
 //#include "objectentry.h"
 #include <Eigen/Dense>
 #include "transformation_support.h"
+#include "object_factory_optimization.h"
 #include "triangulation_with_eigen_1.h"
 using std::vector;
 using std::tuple;

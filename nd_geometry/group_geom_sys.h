@@ -45,6 +45,9 @@ public:
         return obj_factory.make_group(projections);
     };
     virtual Group<Expr> inversion_of(Group<Expr> o)override{
+        if(o.get_components()->size()==0){//попытался пофиксить баг
+            return polyhedron_gs->inversion_of(obj_factory.make_polyhedron({}));
+        }
         Group<Expr> res=obj_factory.make_group({});
         for(Polyhedron<Expr> i:*o.get_components()){
             res=intersect_of(res,polyhedron_gs->inversion_of(i));

@@ -12,7 +12,9 @@ add_library(Parser_ver_2
     parse_errors_ver_2.cpp
     some_more_parsing_utilites.h
     transformation_support.h
-    transformation_support.cpp)
+    transformation_support.cpp
+    object_factory_optimization.h
+    object_factory_optimization.cpp)
 
 target_include_directories(Parser_ver_2 PUBLIC .)
 

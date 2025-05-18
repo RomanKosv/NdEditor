@@ -51,6 +51,16 @@ StdContext::StdContext(){
     gs.polyhedron_gs->algebra=gs.algebra;
     gs.polyhedron_gs->obj_factory=gs.obj_factory;
     gs.polyhedron_gs->order=gs.order;
+    gs.polyhedron_gs->zero=space.get_zero();
+    initalize_vars_and_functions();
+}
+
+StdContext::StdContext(StdSpaceFactory<Scalar> _space, LinearAlgebra<NumExpr, Scalar> _algebra, GroupGeomSys<Scalar, NumExpr> _gs)
+{
+    space=_space;
+    algebra=_algebra;
+    gs=_gs;
+    gs.algebra=algebra;
     initalize_vars_and_functions();
 }
 

@@ -47,7 +47,7 @@
         "name": "square",
         "project": false,
         "r": 0.9848325252532959,
-        "visible": true
+        "visible": false
     },
     {
         "a": 1,
@@ -82,9 +82,9 @@
     {
         "a": 1,
         "b": 0,
-        "expression": "[transform]im(x)=0.7*x-0.7*y&im(y)=0.7*y+0.7*x&im(z)=z",
+        "expression": "Можно объявлять контстанты и линейные формы для использования в дальнейшем",
         "g": 0.501960813999176,
-        "name": "rotate",
+        "name": "//",
         "project": false,
         "r": 0,
         "visible": true
@@ -92,11 +92,121 @@
     {
         "a": 1,
         "b": 0,
-        "expression": "rotate(square)",
+        "expression": "3.14",
         "g": 0.501960813999176,
-        "name": "",
+        "name": "pi",
         "project": false,
         "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x+y+z",
+        "g": 0.501960813999176,
+        "name": "lin_form",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Можно объявлять новые переменные - измерения пространства",
+        "g": 0.501960813999176,
+        "name": "//",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[new var]",
+        "g": 0.501960813999176,
+        "name": "w",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Можно объявлять фигуры более чем 3 измерений. Например гиперкуб",
+        "g": 0.501960813999176,
+        "name": "//",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x<=1&x>=-1&y<=1&y>=-1&z<=1&z>=-1&w<=1&w>=-1",
+        "g": 0.501960813999176,
+        "name": "hipercube",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Пока он выглядит просто как куб.",
+        "g": 0.501960813999176,
+        "name": "//",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0.06570535153150558,
+        "expression": "move(hipercube,lin_form,-2)",
+        "g": 0.7931334376335144,
+        "name": "",
+        "project": false,
+        "r": 0.7955749034881592,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Картина станет интереснее, если его повернуть. Для этого можно использовать преобразования пространства. Они задаются как условия относительно новых и старых переменных. Для новых переменных используется специальная функция im",
+        "g": 0.501960813999176,
+        "name": "//",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "Создадим поворот относительно x0w, y0w на 45 градусов",
+        "g": 0.501960813999176,
+        "name": "//",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 0.4762188196182251,
+        "b": 0.8733501434326172,
+        "expression": "[transform] im(y)=0.7*y+0.5*w-0.5*x & im(w)=0.5*w-0.5*x-0.7*y & im(x)=0.7*x+0.7*w & im(z)=z",
+        "g": 0.19511711597442627,
+        "name": "rot",
+        "project": false,
+        "r": 0.06816205382347107,
+        "visible": true
+    },
+    {
+        "a": 0.4814373850822449,
+        "b": 0.9142595529556274,
+        "expression": "rot(hipercube)",
+        "g": 0.287571519613266,
+        "name": "",
+        "project": false,
+        "r": 0.040619514882564545,
         "visible": true
     }
 ]

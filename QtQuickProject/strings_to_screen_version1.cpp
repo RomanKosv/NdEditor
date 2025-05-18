@@ -18,6 +18,27 @@ strings_to_screen_version1::strings_to_screen_version1() {
     //     default_context.vars[string{c}]=ExprResSucces{one};
     //     default_context.dim_names[id]=string{c};
     // }
+    StdSpaceFactory<Scalar> space;
+    auto algebra=linear_algebra_utilites::make_algebra<Scalar,NumExpr>([](NumExpr a, NumExpr b)->Scalar{return a.dot(b);});
+    function<SparseVector<double>(SparseVector<double>,double)> mult=[](SparseVector<double> a,double c)->SparseVector<double>{
+        return a*c;
+    };
+    function<SparseVector<double>(SparseVector<double>,SparseVector<double>)> add=[](SparseVector<double> a,SparseVector<double> b)->SparseVector<double>{
+        return a+b;
+    };
+    algebra.mult=mult;
+    algebra.add=add;
+    GroupGeomSys<Scalar,NumExpr> gs;
+    gs.algebra=algebra;
+    gs.obj_factory=concrete_parsing_ver_2::wrap_geometry_factory_filter_trivial(0,space);
+    gs.order=linear_algebra_utilites::make_order<Scalar>();
+    gs.polyhedron_gs=make_shared<nd_parser_realisation_1::PolyhedronGeomSys<NumExpr,Scalar>>(
+        nd_parser_realisation_1::PolyhedronGeomSys<NumExpr,Scalar>{});
+    gs.polyhedron_gs->algebra=gs.algebra;
+    gs.polyhedron_gs->obj_factory=gs.obj_factory;
+    gs.polyhedron_gs->order=gs.order;
+    gs.polyhedron_gs->zero=space.get_zero();
+    default_context=StdContext(space,algebra,gs);
 }
 /*
 vector<triangle> strings_to_screen_version1::get_render(Model & m, Context & c)

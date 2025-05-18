@@ -125,6 +125,7 @@ struct StdContext{
     LinearAlgebra<NumExpr,Scalar> algebra;
     GroupGeomSys<Scalar,NumExpr> gs;
     StdContext();
+    StdContext(StdSpaceFactory<Scalar> _space, LinearAlgebra<NumExpr,Scalar> _algebra,GroupGeomSys<Scalar,NumExpr> _gs);
     void initalize_vars_and_functions();
     bool is_scalar(NumExpr expr);
     bool is_zero(NumExpr expr);

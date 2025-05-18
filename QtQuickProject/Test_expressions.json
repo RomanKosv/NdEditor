@@ -1,0 +1,222 @@
+[
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "a",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "b",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "c",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x+a/12+b*2",
+        "g": 0.501960813999176,
+        "name": "l",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "4*x-(a/3-b*8)",
+        "g": 0.501960813999176,
+        "name": "m",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "l*2+m/2<2",
+        "g": 0.501960813999176,
+        "name": "halfspace3",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0.0475165955722332,
+        "expression": "x+y<1&x+y>=-1&x<=2&x>-2&(z+c<1&z+c>-1)",
+        "g": 0.0475165955722332,
+        "name": "paralellogram",
+        "project": true,
+        "r": 0.8966201543807983,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0.8886396288871765,
+        "expression": "(y!=2)",
+        "g": 0.13667505979537964,
+        "name": "not_plane2",
+        "project": false,
+        "r": 0.9526970386505127,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0.04284733533859253,
+        "expression": "!not_plane2",
+        "g": 0.8823224306106567,
+        "name": "plane2",
+        "project": false,
+        "r": 0.9347981810569763,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "33",
+        "g": 0.501960813999176,
+        "name": "k",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x=-k*z/11",
+        "g": 0.501960813999176,
+        "name": "kplane",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x+a<2&x+a>-1&y+a<2&y+a>-1&z+a<2&z+a>-1&a+b>-1&a+b<2",
+        "g": 0.501960813999176,
+        "name": "piromide_5d",
+        "project": true,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "1=1",
+        "g": 0.501960813999176,
+        "name": "zero_dim_all_space",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "1=2",
+        "g": 0.501960813999176,
+        "name": "zero_dim_not_solved",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[transform] im(x)=0.7*x-0.7*y & im(y)=0.7*x+0.7*y & im(z)=z",
+        "g": 0.501960813999176,
+        "name": "rotate_x0y_45",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x<=1&x>=-1&y<=1&y>=-1&z<=1&z>=-1",
+        "g": 0.501960813999176,
+        "name": "cube_3d",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "rotate_x0y_45(cube_3d)",
+        "g": 0.501960813999176,
+        "name": "test_transform",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "move(cube_3d,z,-5)",
+        "g": 0.501960813999176,
+        "name": "test_move",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "move(cube_3d,z,8) | move(cube_3d,z+x,5) | move(cube_3d,z+y,5) | move(cube_3d,z-x,5) | move(cube_3d,z-y,5)",
+        "g": 0.501960813999176,
+        "name": "group_5_polyhedrones",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x+y+z+a+b",
+        "g": 0.501960813999176,
+        "name": "lin_form_5_vars",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "move(cube_3d&a=0&b=0,-lin_form_5_vars,6)",
+        "g": 0.501960813999176,
+        "name": "moved_in_hiperspace",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": false
+    }
+]

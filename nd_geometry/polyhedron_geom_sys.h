@@ -10,6 +10,7 @@ public:
     GeometryObjectFactory<Expr> obj_factory;
     LinearAlgebra<Expr,Coef> algebra;
     LinearOrder<Coef> order;
+    Expr zero;
     virtual Polyhedron<Expr> intersect_of(Polyhedron<Expr> o1, Polyhedron<Expr> o2){
         std::vector<HalfSpace<Expr>> vec;
         for(auto hs:*o1.get_faces()){
@@ -82,6 +83,10 @@ public:
         return project_in_ortogonal(o,linear_algebra_utilites::ortanogalise_space(algebra,dims));
     };
     virtual Group<Expr> inversion_of(Polyhedron<Expr> o){
+        //попытался пофиксить баг
+        if(o.get_faces()->size()==0){
+            return obj_factory.make_group({obj_factory.make_polyhedron({obj_factory.make_halfspace(zero,true)})});
+        }
         std::vector<Polyhedron<Expr>> halfspaces;
         for(HalfSpace<Expr> hs:*o.get_faces()){
             auto inversed=obj_factory.make_halfspace(-*hs.get_upper_bound(),!hs.is_strong());
