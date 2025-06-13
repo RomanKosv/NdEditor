@@ -24,6 +24,7 @@ add_executable(NdEditor main.cpp
     parser/test_inequality_system_parsing_1.h
     parser/function_parse_instructions.cpp
     parser/linear_inequalites_parser_test_expr
+    nd_geometry/chernikovrulessupport.h nd_geometry/chernikovrulessupport.cpp
     )
 
 target_link_libraries (NdEditor Eigen3::Eigen)
@@ -39,6 +40,7 @@ add_library(NdEditorLib #[[main.cpp]]
     parser/test_inequality_system_parsing_1.h
     parser/function_parse_instructions.cpp
     parser/linear_inequalites_parser_test_expr
+    nd_geometry/chernikovrulessupport.h
     )
 
 target_include_directories(NdEditorLib PUBLIC .)

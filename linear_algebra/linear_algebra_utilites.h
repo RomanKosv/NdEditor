@@ -93,7 +93,9 @@ template<typename Expr, typename Coef>
 std::vector<Expr> ortanogalise_space(LinearAlgebra<Expr,Coef> la, std::vector<Expr> space){
     std::vector<Expr> ortagonalised;
     for(Expr i:space){
-        ortagonalised.push_back(get_indepedent_to_ortogonal(la,i,ortagonalised));
+        Expr new_dim=get_indepedent_to_ortogonal(la,i,ortagonalised);
+        if(!is_zero(la,new_dim))
+            ortagonalised.push_back(new_dim);
     }
     return ortagonalised;
 }

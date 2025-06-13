@@ -1,0 +1,22 @@
+[
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "a",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x<a&a<0",
+        "g": 0.501960813999176,
+        "name": "piromide_5d",
+        "project": false,
+        "r": 0,
+        "visible": true
+    }
+]

@@ -1,7 +1,6 @@
 #ifndef POLYHEDRON_GEOM_SYS_H
 #define POLYHEDRON_GEOM_SYS_H
-#include "linear_geometry_std_structures.h"
-#include "../linear_algebra/linear_algebra_utilites.h"
+#include "chernikovrulessupport.h"
 using namespace nd_geometry;
 namespace nd_parser_realisation_1{
 template<typename Expr,typename Coef>
@@ -56,14 +55,17 @@ public:
         return obj_factory.make_polyhedron(neutral);
     };
     virtual Polyhedron<Expr> project_in_ortogonal(Polyhedron<Expr> o, std::vector<Expr> dims){
+        std::vector<Expr> project_dims;
         for(HalfSpace<Expr> hs:*o.get_faces()){
             Expr perpendicular=linear_algebra_utilites::get_indepedent_to_ortogonal(
                 algebra,*hs.get_upper_bound(),dims);
             if(!linear_algebra_utilites::is_zero(algebra,perpendicular)){
-                return project_in_ortogonal(project_parallel(o,perpendicular),dims);
+                dims.push_back(perpendicular);
+                project_dims.push_back(perpendicular);
             }
         }
-        return o;
+        ChernikovRulesSupport<Coef,Expr> support;
+        return support.project_parallel_dims(o, project_dims, algebra, order, obj_factory);
     }
     virtual Polyhedron<Expr> project_in(Polyhedron<Expr> o, std::vector<Expr> dims){
         /*
