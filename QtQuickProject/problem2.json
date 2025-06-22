@@ -1,0 +1,82 @@
+[
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "x1",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "y1",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "z1",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "x2",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "y2",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[newvar]",
+        "g": 0.501960813999176,
+        "name": "z2",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[transform]im(x)=x2 & im(y)=y2 & im(z)=z2",
+        "g": 0.501960813999176,
+        "name": "p",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x2+y2+z2<=1 & -x2+y2+z2<=1& x2+y2-z2<=1& x2-y2+z2<=1 & x=x2 & y=y2 &z=z2",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": true,
+        "r": 0,
+        "visible": true
+    }
+]

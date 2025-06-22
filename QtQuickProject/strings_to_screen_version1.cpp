@@ -38,6 +38,7 @@ strings_to_screen_version1::strings_to_screen_version1() {
     gs.polyhedron_gs->obj_factory=gs.obj_factory;
     gs.polyhedron_gs->order=gs.order;
     gs.polyhedron_gs->zero=space.get_zero();
+    gs.polyhedron_gs->epsilon=scalar_epsilon;
     default_context=StdContext(space,algebra,gs);
 }
 /*

@@ -99,6 +99,17 @@ std::vector<Expr> ortanogalise_space(LinearAlgebra<Expr,Coef> la, std::vector<Ex
     }
     return ortagonalised;
 }
+template<typename Expr, typename Coef>
+std::vector<Expr> ortanogalise_space_with_epsilon(LinearAlgebra<Expr,Coef> la, std::vector<Expr> space,  LinearOrder<Coef> ord, Coef eps){
+    std::vector<Expr> ortagonalised;
+    for(Expr i:space){
+        Expr new_dim=get_indepedent_to_ortogonal(la,i,ortagonalised);
+        Coef sq_ln=like_sqrt_len(la,new_dim);
+        if(ord.compare_first_to_second(sq_ln,eps)==CompRes::More)
+            ortagonalised.push_back(new_dim);
+    }
+    return ortagonalised;
+}
 
 }
 #endif // LINEAR_ALGEBRA_UTILITES_H

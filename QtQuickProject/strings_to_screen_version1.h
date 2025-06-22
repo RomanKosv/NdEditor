@@ -32,6 +32,7 @@ class strings_to_screen_version1
 public:
     static vector<Vector3f> out_box_normals;
     float out_box_distance = 50;
+    Scalar scalar_epsilon=1e-5;
     strings_to_screen_version1();
     //vector<triangle> get_render(Model&,Context&);
     vector<triangle> triangulate(vector<Vector3f> normals,vector<float> distances,float epsilon = 1e-5f);

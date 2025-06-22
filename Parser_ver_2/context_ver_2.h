@@ -113,6 +113,7 @@ enum class CompOp{
 typedef FirstTransformationRealisation<NumExpr,Scalar> Transform;
 
 struct StdContext{
+    Scalar epsilon=1e-5;
     map<string,ExprResSucces> vars;
     map<string,EvalFun> funs;
     //map<string,NumExpr> numvars;

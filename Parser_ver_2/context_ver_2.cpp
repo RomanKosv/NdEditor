@@ -52,6 +52,7 @@ StdContext::StdContext(){
     gs.polyhedron_gs->obj_factory=gs.obj_factory;
     gs.polyhedron_gs->order=gs.order;
     gs.polyhedron_gs->zero=space.get_zero();
+    gs.polyhedron_gs->epsilon=epsilon;
     initalize_vars_and_functions();
 }
 

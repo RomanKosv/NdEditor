@@ -10,6 +10,7 @@ public:
     LinearAlgebra<Expr,Coef> algebra;
     LinearOrder<Coef> order;
     Expr zero;
+    Coef epsilon;
     virtual Polyhedron<Expr> intersect_of(Polyhedron<Expr> o1, Polyhedron<Expr> o2){
         std::vector<HalfSpace<Expr>> vec;
         for(auto hs:*o1.get_faces()){
@@ -59,7 +60,8 @@ public:
         for(HalfSpace<Expr> hs:*o.get_faces()){
             Expr perpendicular=linear_algebra_utilites::get_indepedent_to_ortogonal(
                 algebra,*hs.get_upper_bound(),dims);
-            if(!linear_algebra_utilites::is_zero(algebra,perpendicular)){
+            Coef sq_ln=linear_algebra_utilites::like_sqrt_len(algebra,perpendicular);
+            if(order.compare_first_to_second(sq_ln,epsilon)==CompRes::More){
                 dims.push_back(perpendicular);
                 project_dims.push_back(perpendicular);
             }
@@ -82,7 +84,11 @@ public:
         return o;
         */
         //теперь должно работать
-        return project_in_ortogonal(o,linear_algebra_utilites::ortanogalise_space(algebra,dims));
+        return project_in_ortogonal(
+            o,
+            linear_algebra_utilites::ortanogalise_space_with_epsilon(
+                algebra,dims,order,epsilon)
+            );
     };
     virtual Group<Expr> inversion_of(Polyhedron<Expr> o){
         //попытался пофиксить баг

@@ -13,7 +13,7 @@
 #include "../parser/debug.hh"
 #include "function_parse_architect.hh"
 namespace common_parsing{
-static Log OPERATOR_PARSE_LOGGER{true,"[OPERATOR_PARSE_INSTRUCTIONS_LOGGER]"};
+static Log OPERATOR_PARSE_LOGGER{false,"[OPERATOR_PARSE_INSTRUCTIONS_LOGGER]"};
 template<typename Res, typename Operand, typename Operator,
 typename Context, typename NoParseInfo>
 struct OperatorParseInstruction{

@@ -13,7 +13,7 @@
 #include "parse_terminals.hh"
 
 namespace common_parsing{
-static Log PARSE_FUN_LOGGER{true,"[PARSE_FUN_INSTRUCTIONS_LOGGER]"};
+static Log PARSE_FUN_LOGGER{false,"[PARSE_FUN_INSTRUCTIONS_LOGGER]"};
 static const auto LEFT_BRACKET=parse_terminal("(");
 static const auto RIGHT_BRACKET=parse_terminal(")");
 static const auto COMMA=parse_terminal(",");
