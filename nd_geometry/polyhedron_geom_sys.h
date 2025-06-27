@@ -57,11 +57,15 @@ public:
     };
     virtual Polyhedron<Expr> project_in_ortogonal(Polyhedron<Expr> o, std::vector<Expr> dims){
         std::vector<Expr> project_dims;
+        cout<<"project_in_ortogonal dims: \n";
+        cout<<" epsilon "<<epsilon<<"\n";
         for(HalfSpace<Expr> hs:*o.get_faces()){
             Expr perpendicular=linear_algebra_utilites::get_indepedent_to_ortogonal(
                 algebra,*hs.get_upper_bound(),dims);
             Coef sq_ln=linear_algebra_utilites::like_sqrt_len(algebra,perpendicular);
             if(order.compare_first_to_second(sq_ln,epsilon)==CompRes::More){
+                cout<<perpendicular;
+                cout<<" ln "<<sq_ln<<"\n";
                 dims.push_back(perpendicular);
                 project_dims.push_back(perpendicular);
             }

@@ -179,6 +179,8 @@ struct StdContext{
     Transform get_full_transform_static_scale();
     optional<EvalError> check_match_types(vector<EvalMaybe<ExprResSucces>> & args, vector<EvalTypes> types, string funname);
     EvalMaybe<ExprResSucces> rotate_figure(vector<EvalMaybe<ExprResSucces>> & args);
+    vector<NumExpr> get_named_space();
+    vector<NumExpr> get_3d_space();
 };
 }
 #endif // CONTEXT_VER_2_H

@@ -567,14 +567,4 @@ vector<NumExpr> StdContext::get_named_space()
     return res;
 }
 
-vector<NumExpr> StdContext::get_3d_space()
-{
-    return vector<NumExpr>{
-        space.get_scale(),
-        space.get_one(space.x),
-        space.get_one(space.y),
-        space.get_one(space.z)
-    };
-}
-
 }

@@ -163,12 +163,18 @@ public:
             is_strong.push_back(hs.is_strong());
         }
         std::tie(res,parents)=chernikov_elimination(exprs,dims,la,order);
+        cout<<"res: \n";
         vector<HalfSpace<Expr>> faces;
         for(int i=0; i<res.size(); i++){
-            bool strong;
+            bool strong=false;
+            cout<<"expr: "<<res.at(i)<<"\n";
+            cout<<"parents: ";
             for(int ind:parents.at(i)){
                 strong=strong|is_strong.at(ind);
+                cout<<ind<<" ";
             }
+            cout<<"\n";
+            cout<<"strong: "<<strong<<"\n";
             faces.push_back(factory.make_halfspace(res.at(i),strong));
         }
         return factory.make_polyhedron(faces);

@@ -1,0 +1,92 @@
+[
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "1=2",
+        "g": 0.501960813999176,
+        "name": "zero_dim_not_solved",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[transform] im(x)=0.7*x-0.7*y & im(y)=0.7*x+0.7*y & im(z)=z",
+        "g": 0.501960813999176,
+        "name": "rotate_x0y_45",
+        "project": false,
+        "r": 0,
+        "visible": false
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "x<=1&x>=-1&y<=1&y>=-1&z<=1&z>=-1",
+        "g": 0.501960813999176,
+        "name": "cube",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "rotate_x0y_45(cube)",
+        "g": 0.501960813999176,
+        "name": "r",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "rotate_x0y_45(zero_dim_not_solved)",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[transform] im(x)=2*x&im(y)=y&im(z)=z",
+        "g": 0.501960813999176,
+        "name": "ext_x",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "ext_x(r)",
+        "g": 0.501960813999176,
+        "name": "er",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "[transform] im(y)<=y+1&im(y)>=y-1&im(x)=x&im(z)=z",
+        "g": 0.501960813999176,
+        "name": "ext_cd_y",
+        "project": false,
+        "r": 0,
+        "visible": true
+    },
+    {
+        "a": 1,
+        "b": 0,
+        "expression": "",
+        "g": 0.501960813999176,
+        "name": "",
+        "project": false,
+        "r": 0,
+        "visible": true
+    }
+]

@@ -36,8 +36,9 @@ public:
     QString result();
     void setIsError(bool new_err);
     bool isError();
-    tuple<std::optional<Object>,QString,bool> intreprete_with_string_res(Context&);
-    std::optional<Object> intreprete(Context&);
+    tuple<std::optional<Figure>,QString,bool> intreprete_with_string_res(Context&);
+    tuple<QString,bool> process_intreprete_obj_with_string_res(Context&,Object&);
+    std::optional<Figure> intreprete(Context&);
     std::optional<Figure> get_render_figure(Context& context);
 signals:
     void nameChanged(QString new_name);

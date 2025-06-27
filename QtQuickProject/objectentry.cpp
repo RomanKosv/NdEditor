@@ -114,7 +114,7 @@ bool ObjectEntry::isError()
     return _is_error;
 }
 
-tuple<std::optional<Object>, QString, bool> ObjectEntry::intreprete_with_string_res(Context & context)
+tuple<std::optional<Figure>, QString, bool> ObjectEntry::intreprete_with_string_res(Context & context)
 {
     QString name=this->name();
     QString data=this->expression();
@@ -125,199 +125,133 @@ tuple<std::optional<Object>, QString, bool> ObjectEntry::intreprete_with_string_
     auto p_transform=to_end(concrete_parsing_ver_2::p_transform(t_expr,0));
     std::regex r(R"(\s*)");
     bool empty_name=std::regex_match(*t_name,r);//если имя не указано
+    bool empty_expr=std::regex_match(*t_expr,r);//если пустое поле
     std::regex new_var_pattern(R"(\s*\[\s*new\s*var\s*\]\s*)");
     bool new_var_expr=std::regex_match(*t_expr, new_var_pattern);
     QString message="";
     bool is_err;
-    if(isOk(p_transform)&&(isOk(p_name)||empty_name)){
-        auto v_transform=get_node(p_transform).intreprete(context);
-        if(v_transform.isOk()){
-            is_err=false;
-            if(isOk(p_name)){
-                auto v_name=get_node(p_name).intreprete(context);
-                if(!context.funs.contains(v_name)){
-                    message+="intreprete transform;";
-                    context.funs[v_name]=concrete_parsing_ver_2::EvalFun{v_transform.getOk()};
-                }else{
-                    message+="err intreprete transform;";
-                    message+="function name already exist: "+*t_name+";";
-                    is_err=true;
-                }
-            }
-            return tuple{nullopt,message,is_err};
-        }else{
-            message+="err intreprete transform "+*t_expr+";";
-            message+=v_transform.getErr().message;
-            is_err=true;
-            return tuple{nullopt,message,is_err};
-        }
-    }else if(new_var_expr){
-        if(common_parsing::isOk(p_name)){
-            auto n_name=get_node(p_name);
-            string v_name=n_name.intreprete(context);
-            if(!context.vars.contains(v_name)){
-                auto id=context.space.get_next();
-                context.dim_names[id]=v_name;
-                context.vars[v_name]=ExprResSucces{context.space.get_one(id)};
-                is_err=false;
-                message+="new var";
-                return tuple{EvalMaybe<ExprResSucces>{context.vars[v_name]},message,is_err};
-            }else{
-                message+="name already exist: "+*t_name;
-                is_err=true;
-                return tuple{std::nullopt,message,is_err};
-            }
-        }else{
-            message+="no name: "+*t_name;
-            is_err=true;
-            return tuple{std::nullopt,message,is_err};
-        }
-    }else if(!(common_parsing::isOk(p_name)||empty_name)){
-        message+="no name: "+*t_name;
+    std::optional<Figure> res_to_display;
+    if(!(common_parsing::isOk(p_name)||empty_name)){//name incorrect, maybe comment
         is_err=!std::regex_match(*t_name,regex(R"(\s*//\s*)"));
-        return tuple{std::nullopt,message,is_err};
-    }else if(!common_parsing::isOk(p_expr)){
-        is_err=!std::regex_match(*t_expr,regex(R"(\s*)"));
         if(is_err){
-            message+="no expr: "+*t_expr;
-        }
-        return tuple{std::nullopt,message,is_err};
-    }else{
-        //auto n_name=get_node(p_name);
-        auto n_expr=get_node(p_expr);
-        //string v_name=n_name.intreprete(context);
-        Object v_expr=n_expr.intreprete(context);
-        if(empty_name){
-            is_err=!v_expr.isOk();
-            message+=context.to_str(v_expr);
-            return tuple{v_expr,message,is_err};
+            message+=" no name: "+*t_name;
         }else{
-            auto n_name=get_node(p_name);
-            string v_name=n_name.intreprete(context);
-            if(!context.vars.contains(v_name)){
-                if(v_expr.isOk()){
-                    context.vars[v_name]=v_expr.getOk();
-                    is_err=false;
-                    message+=context.to_str(v_expr);
-                    return tuple{v_expr,message,is_err};
-                }else{
-                    is_err=true;
-                    message+=context.to_str(v_expr);
-                    return tuple{std::nullopt,message,is_err};
-                }
-            }else{
-                message+="name already exist: "+*t_name;
+            message+=" comment ";
+        }
+    }else if(empty_expr){
+        is_err=false;
+        message+="empty field";
+    }else{
+        optional<string> save_name=nullopt;
+        is_err=false;
+        if(!empty_name){
+            auto v_name=get_node(p_name).intreprete(context);
+            if(context.vars.contains(v_name)||context.funs.contains(v_name)){
                 is_err=true;
-                return tuple{std::nullopt,message,is_err};
+                message+=" error: name alredy exists ";
+            }else{
+                save_name=v_name;
             }
         }
-    }
+        if(!is_err){
+            if(isOk(p_transform)){//transform
+                auto v_transform=get_node(p_transform).intreprete(context);
+                if(v_transform.isOk()){
+                    is_err=false;
+                    message+=" intreprete transform success ";
+                    if(save_name.has_value()){
+                        context.funs[save_name.value()]=concrete_parsing_ver_2::EvalFun{
+                            v_transform.getOk()
+                        };
+                    }else{
+                        //pass, just not write
+                    }
+                }else{
+                    is_err=true;
+                    message+=" error intreprete trensform ";
+                }
+            }else if(new_var_expr){
+                is_err=false;
+                message+=" new var ";
+                if(save_name.has_value()){
+                    auto id=context.space.get_next();
+                    context.dim_names[id]=save_name.value();
+                    context.vars[save_name.value()]=ExprResSucces{context.space.get_one(id)};
+                }else{
+                    //no write
+                }
+            }else if(common_parsing::isOk(p_expr)){
+                auto v_expr=get_node(p_expr).intreprete(context);
+                std::tie(message,is_err)=process_intreprete_obj_with_string_res(context,v_expr);
+                if((!is_err)&&save_name.has_value()){
+                    context.vars[save_name.value()]=v_expr.getOk();
+                }else{
+                    //no write var
+                };
+                if((!is_err)&&v_expr.getOk().is_logic()){
+                    res_to_display=v_expr.getOk().get_figure();
+                }else{
+                    //no write display
+                };
+            }else{
+                is_err=true;
+                message+=" error: can not read expression part ";
+            }
+        }else{
+            //pass
+            //it just err with exist name
+            //message and is_err setted
+        }
+    };
+    return {res_to_display,message,is_err};
 }
 
-std::optional<Object> ObjectEntry::intreprete(Context & context)
+tuple<QString, bool> ObjectEntry::process_intreprete_obj_with_string_res(Context & context, Object & obj)
 {
-    std::optional<Object> res;
+    bool is_err=!obj.isOk();
+    QString message=QString::fromStdString(context.to_str(obj));
+    if(obj.isOk()&&obj.getOk().is_logic()){
+        Figure display=context.gs.project_in(obj.getOk().get_figure(), context.get_named_space());
+        message=QString::fromStdString(context.to_str(display));
+    }else{
+        message=QString::fromStdString(context.to_str(obj));
+    }
+    return {message,is_err};
+}
+
+std::optional<Figure> ObjectEntry::intreprete(Context & context)
+{
+    std::optional<Figure> res;
     QString message;
     bool is_err;
     std::tie(res,message,is_err)=intreprete_with_string_res(context);
     setResult(message);
     setIsError(is_err);
     return res;
-    /*
-    QString name=this->name();
-    QString data=this->expression();
-    Text t_name=make_shared<string>(name.toStdString());
-    Text t_expr=make_shared<string>(data.toStdString());
-    auto p_name=to_end(concrete_parsing_ver_2::p_name(t_name,0));
-    auto p_expr=to_end(concrete_parsing_ver_2::p_eval_layer(t_expr,0));
-    auto p_transform=to_end(concrete_parsing_ver_2::p_transform(t_expr,0));
-    std::regex r(R"(\s*)");
-    bool empty_name=std::regex_match(*t_name,r);//если имя не указано
-    std::regex new_var_pattern(R"(\s*\[\s*new\s*var\s*\]\s*)");
-    bool new_var_expr=std::regex_match(*t_expr, new_var_pattern);
-    if(isOk(p_transform)&&(isOk(p_name)||empty_name)){
-        auto v_transform=get_node(p_transform).intreprete(context);
-        if(v_transform.isOk()){
-            if(isOk(p_name)){
-                auto v_name=get_node(p_name).intreprete(context);
-                context.funs[v_name]=concrete_parsing_ver_2::EvalFun{v_transform.getOk()};
-                cout<<"set transform to name "<<t_name<<"\n";
-            }
-            cout<<"ok intreprete transform "<<t_expr<<"\n";
-            return nullopt;
-        }else{
-            cout<<"err intreprete transform "<<t_expr<<"\n";
-            return nullopt;
-        }
-    }else if(new_var_expr){
-        if(common_parsing::isOk(p_name)){
-            auto n_name=get_node(p_name);
-            string v_name=n_name.intreprete(context);
-            if(!context.vars.contains(v_name)){
-                auto id=context.space.get_next();
-                context.dim_names[id]=v_name;
-                context.vars[v_name]=ExprResSucces{context.space.get_one(id)};
-                return EvalMaybe<ExprResSucces>{context.vars[v_name]};
-            }else{
-                cout<<"name already exist: "+*t_name<<"\n";
-                return std::nullopt;
-            }
-        }else{
-            cout<<"no name: "+*t_name<<"\n";
-            return std::nullopt;
-        }
-    }else if(!(common_parsing::isOk(p_name)||empty_name)){
-        cout<<"no name: "+*t_name<<"\n";
-        return std::nullopt;
-    }else if(!common_parsing::isOk(p_expr)){
-        cout<<"no expr: "+*t_expr<<"\n";
-        return std::nullopt;
-    }else{
-        //auto n_name=get_node(p_name);
-        auto n_expr=get_node(p_expr);
-        //string v_name=n_name.intreprete(context);
-        Object v_expr=n_expr.intreprete(context);
-        if(empty_name){
-            return v_expr;
-        }else{
-            auto n_name=get_node(p_name);
-            string v_name=n_name.intreprete(context);
-            if(!context.vars.contains(v_name)){
-                if(v_expr.isOk()){
-                    context.vars[v_name]=v_expr.getOk();
-                    return v_expr;
-                }else{
-                    cout<<"expr err: "+*t_expr<<" try set name: "<<v_name<<"\n";
-                    return std::nullopt;
-                }
-            }else{
-                cout<<"name already exist: "+*t_name<<"\n";
-                return std::nullopt;
-            }
-        }
-    }*/
 }
 
 std::optional<Figure> ObjectEntry::get_render_figure(Context &context)
 {
     auto object=intreprete(context);
     if(object.has_value()){
-        if(object.value().isOk()&&object.value().getOk().is_logic()){
-            if(visible()){
-                if(project()){
-                    //strings_to_screen_version1 pipeline;
-                    vector<NumExpr> space={
-                        context.space.get_scale(),
-                        context.space.get_one(context.space.x),
-                        context.space.get_one(context.space.y),
-                        context.space.get_one(context.space.z)
-                    };
-                    return context.gs.project_in(object.value().getOk().get_figure(),space);
-                }else{
-                    return object.value().getOk().get_figure();
-                }
+        if(visible()){
+            vector<NumExpr> space;
+            if(project()){
+                space=context.get_3d_space();
+            }else{
+                space=context.get_named_space();
             }
+            string s=context.to_str(object.value());
+            cout<<"get_render_figure "<<s<<"\n";
+            auto proj = context.gs.project_in(object.value(),space);
+            string s_proj=context.to_str(proj);
+            string sm=s+s_proj;
+            return proj;
+        }else{
+            //to return nullopt
         }
+    }else{
+        //to return nullopt
     }
     return std::nullopt;
 }
